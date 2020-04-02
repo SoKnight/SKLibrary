@@ -1,0 +1,11 @@
+name: ${project.name}
+main: ru.soknight.lib.plugin.SKLibraryPlugin
+author: SoKnight
+version: ${project.version}
+api-version: 1.12
+commands:
+  sklibrary:
+    description: Display plugin information
+permissions:
+  sklibrary.info:
+    default: true
