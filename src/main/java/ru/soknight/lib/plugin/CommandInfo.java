@@ -24,17 +24,10 @@ public class CommandInfo extends ExtendedCommandExecutor {
 	public void executeCommand(CommandSender sender, String[] args) {
 		if(!validateExecution(new BaseExecutionData(sender, args))) return;
 		
-		String version = description.getVersion();
-		String api = "Legacy (< 1.13)";
-		try {
-			api = description.getAPIVersion();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		String pversion = description.getVersion();
 		
 		sender.sendMessage(ChatColor.GRAY + "   SoKnight's library information");
-		sender.sendMessage(" Plugin version: " + ChatColor.AQUA + version);
-		sender.sendMessage(" API version: " + ChatColor.AQUA + api);
+		sender.sendMessage(" Plugin version: " + ChatColor.AQUA + pversion);
 		sender.sendMessage(" Developer: " + ChatColor.AQUA + "SoKnight");
 		sender.sendMessage(" Github: " + ChatColor.AQUA + "https://github.com/SoKnight/SKLibrary");
 		sender.sendMessage(" ");
