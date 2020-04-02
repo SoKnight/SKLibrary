@@ -6,9 +6,12 @@ import java.io.InputStream;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import lombok.NoArgsConstructor;
+
 /**
  * Configuration of messages file which contains methods for working with plugin messages
  */
+@NoArgsConstructor
 public class Messages extends AbstractConfiguration {
 	
 	/**

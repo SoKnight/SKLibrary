@@ -5,9 +5,12 @@ import java.io.InputStream;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
+import lombok.NoArgsConstructor;
+
 /**
  * Configuration for working with configuration files
  */
+@NoArgsConstructor
 public class Configuration extends AbstractConfiguration {
 	
 	/**

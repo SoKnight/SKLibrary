@@ -12,14 +12,18 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 /**
  * Abstract configuration instance which contains basical methods for working with configuration file
  */
+@Data
+@NoArgsConstructor
 public abstract class AbstractConfiguration {
 
-	private final JavaPlugin plugin;
+	private JavaPlugin plugin;
 	private InputStream source;
 	private String filename;
 	private File datafolder;
@@ -34,7 +38,7 @@ public abstract class AbstractConfiguration {
 	 */
 	public AbstractConfiguration(JavaPlugin plugin, String filename) {
 		this.plugin = plugin;
-		this.filename = filename + ".yml";
+		this.filename = filename;
 		this.source = plugin.getResource(this.filename);
 		this.datafolder = plugin.getDataFolder();
 		refresh();
@@ -48,7 +52,7 @@ public abstract class AbstractConfiguration {
 	 */
 	public AbstractConfiguration(JavaPlugin plugin, InputStream source, String filename) {
 		this.plugin = plugin;
-		this.filename = filename + ".yml";
+		this.filename = filename;
 		this.source = source;
 		this.datafolder = plugin.getDataFolder();
 		refresh();
@@ -63,7 +67,7 @@ public abstract class AbstractConfiguration {
 	 */
 	public AbstractConfiguration(JavaPlugin plugin, File datafolder, InputStream source, String filename) {
 		this.plugin = plugin;
-		this.filename = filename + ".yml";
+		this.filename = filename;
 		this.source = source;
 		this.datafolder = datafolder;
 		refresh();

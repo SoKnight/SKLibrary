@@ -12,13 +12,13 @@ public class SKLibraryPlugin extends JavaPlugin {
 	public void onEnable() {
 		PluginLogger logger = new PluginLogger(this);
 		
-		Configuration config = new Configuration(this, "config");
+		Configuration config = new Configuration(this, "config.yml");
 		if(!config.getBoolean("enabled")) {
 			logger.info("Library plugin functional is unavailable.");
 			return;
 		}
 		
-		Messages messages = new Messages(this, "messages");
+		Messages messages = new Messages(this, "messages.yml");
 		
 		getCommand("sklibrary").setExecutor(new CommandInfo(this, messages));
 		
