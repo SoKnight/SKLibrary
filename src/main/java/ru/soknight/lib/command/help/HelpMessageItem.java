@@ -43,12 +43,12 @@ public class HelpMessageItem {
 	 * Item of help message with description from specified messages section (descriptionKey)
 	 * @param command - command name
 	 * @param messages - messages configuration
-	 * @param descriptionKey - section of description in messages file
+	 * @param key - full section of description in messages file
 	 * @param placeholders - placeholders array (optional)
 	 */
-	public HelpMessageItem(String command, Messages messages, String descriptionKey, Placeholder... placeholders) {
+	public HelpMessageItem(String command, Messages messages, String key, Placeholder... placeholders) {
 		this.command = command;
-		this.description = messages.get(descriptionKey);
+		this.description = messages.get(key);
 		this.placeholders = placeholders;
 	}
 	
