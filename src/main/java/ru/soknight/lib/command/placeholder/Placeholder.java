@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * Abstract placeholder class for basical placeholders or your custom placeholders
+ * Abstract placeholder type for your custom placeholders
  */
 @Getter
 @AllArgsConstructor
