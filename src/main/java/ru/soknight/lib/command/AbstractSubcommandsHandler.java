@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.bukkit.command.CommandSender;
 
+import lombok.Setter;
 import ru.soknight.lib.configuration.Messages;
 import ru.soknight.lib.validation.BaseExecutionData;
 import ru.soknight.lib.validation.CommandExecutionData;
@@ -17,7 +18,7 @@ import ru.soknight.lib.validation.CommandExecutionData;
 public abstract class AbstractSubcommandsHandler extends ExtendedCommandExecutor {
 
 	private final Map<String, ExtendedSubcommandExecutor> executors;
-	private final String noArgsMessage, unknownSubcommandMessage;
+	@Setter private String noArgsMessage, unknownSubcommandMessage;
 	
 	/**
 	 * Subcommands handler with default no-args and unknown-subcommand error messages.
@@ -77,11 +78,18 @@ public abstract class AbstractSubcommandsHandler extends ExtendedCommandExecutor
 		String subcommand = args[0].toLowerCase();
 		
 		CommandExecutionData data = new BaseExecutionData(sender, args);
-		executors.forEach((s, e) -> {
-			if(!s.startsWith(subcommand) || !e.validateTabCompletion(data)) return;
+		
+		if(args.length == 1)
+			executors.forEach((s, e) -> {
+				if(!s.startsWith(subcommand) || !e.validateTabCompletion(data)) return;
 			
-			completions.add(s);
-		});
+				completions.add(s);
+			});
+		else {
+			if(!executors.containsKey(subcommand)) return null;
+			
+			return executors.get(subcommand).executeTabCompletion(sender, args);
+		}
 		
 		return completions;
 	}

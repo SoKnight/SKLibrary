@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.SoKnight</groupId>
     <artifactId>SKLibrary</artifactId>
-    <version>1.0.3</version>
+    <version>1.0.5</version>
     
     <name>SKLibrary</name>
     <description>Library for SoKnight's plugins</description>
@@ -30,7 +30,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.10</version>
+            <version>1.18.12</version>
             <scope>provided</scope>
         </dependency>
         <!-- ORMLite -->

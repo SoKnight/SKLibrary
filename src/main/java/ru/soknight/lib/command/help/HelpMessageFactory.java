@@ -128,7 +128,7 @@ public class HelpMessageFactory {
 	 * @param items - array of help message items
 	 * @return updated factory object
 	 */
-	public HelpMessageFactory append(boolean defaultPermissions, HelpMessageItem... items) {
+	public HelpMessageFactory appendItems(boolean defaultPermissions, HelpMessageItem... items) {
 		if(items == null || items.length == 0) return this;
 		
 		Arrays.stream(items).forEach(i -> {

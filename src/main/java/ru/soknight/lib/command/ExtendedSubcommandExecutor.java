@@ -33,6 +33,8 @@ public abstract class ExtendedSubcommandExecutor extends ValidatableCommandExecu
 	 * @param args - args for completion handling
 	 * @return list of completions with will be sent to sender
 	 */
-	public abstract List<String> executeTabCompletion(CommandSender sender, String[] args);
+	public List<String> executeTabCompletion(CommandSender sender, String[] args) {
+		return null;
+	}
 	
 }
