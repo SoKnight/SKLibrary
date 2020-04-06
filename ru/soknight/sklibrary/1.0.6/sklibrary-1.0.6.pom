@@ -119,7 +119,7 @@
   </dependencies>
   <distributionManagement>
     <repository>
-      <id>${project.groupId}.${project.artifactId}</id>
+      <id>internal.repo</id>
       <name>SKLibrary</name>
       <url>file://${project.build.directory}/mvn-repo</url>
     </repository>
