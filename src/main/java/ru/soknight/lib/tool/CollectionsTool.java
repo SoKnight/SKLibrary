@@ -14,21 +14,21 @@ public class CollectionsTool {
 	/**
 	 * Pagination content and getting content on specified page if it's may be obtained
 	 * @param <T> - class type of List
-	 * @param list - list of objects to pagination
-	 * @param size - size of page, amount of rows per one page
-	 * @param page - page number (from 1)
+	 * @param targetList - list of objects to pagination
+	 * @param pageSize - size of page, amount of rows per one page
+	 * @param pageNumber - page number (from 1)
 	 * @return Content for specified page if it can be obtained, else new empty ArrayList object
 	 */
-	public static <T> List<T> getSubList(List<T> list, int size, int page) {
+	public static <T> List<T> getSubList(List<T> targetList, int pageSize, int pageNumber) {
 		List<T> empty = new ArrayList<>();
-		if(list.isEmpty()) return empty;
+		if(targetList.isEmpty()) return empty;
 		
-		int start = size * (page - 1), end = size * page;
+		int start = pageSize * (pageNumber - 1), end = pageSize * pageNumber;
 		
-		if(start >= list.size()) return empty;
-		if(end >= list.size()) end = list.size();
+		if(start >= targetList.size()) return empty;
+		if(end >= targetList.size()) end = targetList.size();
 		
-		List<T> onpage = list.subList(start, end);
+		List<T> onpage = targetList.subList(start, end);
 		return onpage;
 	}
 	
