@@ -12,7 +12,7 @@ import ru.soknight.lib.validation.ValidationResult;
  * Checks if target player online and sends deny message if it's specified
  */
 @AllArgsConstructor
-public class IsPlayerOnlineValidator extends Validator {
+public class IsPlayerOnlineValidator implements Validator {
 
 	private String message;
 	

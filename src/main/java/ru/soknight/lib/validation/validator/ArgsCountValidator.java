@@ -10,7 +10,7 @@ import ru.soknight.lib.validation.ValidationResult;
  */
 @AllArgsConstructor
 @RequiredArgsConstructor
-public class ArgsCountValidator extends Validator {
+public class ArgsCountValidator implements Validator {
 
 	private final int requiredArgsCount;
 	private String message;

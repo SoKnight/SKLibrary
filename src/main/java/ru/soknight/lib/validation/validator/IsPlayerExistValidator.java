@@ -12,7 +12,7 @@ import ru.soknight.lib.validation.ValidationResult;
  * Checks if target player exist and sends deny message if it's specified
  */
 @AllArgsConstructor
-public class IsPlayerExistValidator extends Validator {
+public class IsPlayerExistValidator implements Validator {
 
 	private String message;
 	

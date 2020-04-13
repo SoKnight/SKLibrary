@@ -12,7 +12,7 @@ import ru.soknight.lib.validation.ValidationResult;
  */
 @AllArgsConstructor
 @RequiredArgsConstructor
-public class PermissionValidator extends Validator {
+public class PermissionValidator implements Validator {
 
 	private final String permission;
 	private String message;

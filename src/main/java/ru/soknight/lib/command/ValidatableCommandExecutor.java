@@ -1,9 +1,8 @@
 package ru.soknight.lib.command;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.List;
 
 import org.bukkit.command.CommandSender;
 
@@ -20,11 +19,11 @@ import ru.soknight.lib.validation.validator.Validator;
 public abstract class ValidatableCommandExecutor {
 
 	private final Messages messages;
-	private Set<Validator> validators;
+	private List<Validator> validators;
 	
 	public ValidatableCommandExecutor(Messages messages) {
 		this.messages = messages;
-		this.validators = new HashSet<>();
+		this.validators = new ArrayList<>();
 	}
 	
 	/**
@@ -34,7 +33,7 @@ public abstract class ValidatableCommandExecutor {
 	public void addValidators(Validator... validators) {
 		if(validators == null || validators.length == 0) return;
 		
-		this.validators.addAll(Arrays.stream(validators).collect(Collectors.toSet()));
+		Arrays.stream(validators).forEach(v -> this.validators.add(v));
 	}
 	
 	/**

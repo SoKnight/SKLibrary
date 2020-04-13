@@ -11,7 +11,7 @@ import ru.soknight.lib.validation.ValidationResult;
  * Checks if sender is player and sends deny message if it's specified
  */
 @AllArgsConstructor
-public class SenderIsPlayerValidator extends Validator {
+public class SenderIsPlayerValidator implements Validator {
 
 	private String message;
 	
