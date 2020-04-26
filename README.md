@@ -9,7 +9,7 @@ Linux distribs, but for Windows it will be similar.
 1) Download sources: `git clone https://github.com/SoKnight/SKLibrary.git sklibrary`
 2) Move into sources directory: `cd sklibrary`
 3) Compile sources: `mvn clean install`
-4) Open `sklibrary/target` and copy `sklibrary-1.0.8.jar` into server `plugins` folder
+4) Open `sklibrary/target` and copy `sklibrary-1.0.9.jar` into server `plugins` folder
 5) Restart your server
 
 ## Development
@@ -34,7 +34,7 @@ Add SKLibrary dependency:
         <dependency>
             <groupId>ru.soknight</groupId>
             <artifactId>sklibrary</artifactId>
-            <version>1.0.8</version>
+            <version>1.0.9</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
