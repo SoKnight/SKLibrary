@@ -7,7 +7,6 @@ import java.util.Map;
 
 import org.bukkit.command.CommandSender;
 
-import lombok.Setter;
 import ru.soknight.lib.argument.CommandArguments;
 import ru.soknight.lib.configuration.Messages;
 import ru.soknight.lib.validation.BaseExecutionData;
@@ -19,7 +18,7 @@ import ru.soknight.lib.validation.CommandExecutionData;
 public abstract class AbstractSubcommandsHandler extends ExtendedCommandExecutor {
 
 	private final Map<String, ExtendedSubcommandExecutor> executors;
-	@Setter private String noArgsMessage, unknownSubcommandMessage;
+	private final String NO_ARGS_MESSAGE, UNKNOWN_SUBCOMMAND_MESSAGE;
 	
 	/**
 	 * Subcommands handler with default no-args and unknown-subcommand error messages.
@@ -29,8 +28,8 @@ public abstract class AbstractSubcommandsHandler extends ExtendedCommandExecutor
 		super(messages);
 		this.executors = new HashMap<>();
 		
-		this.noArgsMessage = messages.get("error.no-args");
-		this.unknownSubcommandMessage = messages.get("error.unknown-subcommand");
+		this.NO_ARGS_MESSAGE = messages.get("error.no-args");
+		this.UNKNOWN_SUBCOMMAND_MESSAGE = messages.get("error.unknown-subcommand");
 	}
 	
 	/**
@@ -42,8 +41,13 @@ public abstract class AbstractSubcommandsHandler extends ExtendedCommandExecutor
 		super(messages);
 		this.executors = new HashMap<>();
 		
-		this.noArgsMessage = noArgsMessage == null ? messages.get("error.no-args") : noArgsMessage;
-		this.unknownSubcommandMessage = unknownSubcommandMessage == null ? messages.get("error.unknown-subcommand") : unknownSubcommandMessage;
+		this.NO_ARGS_MESSAGE = noArgsMessage == null
+				? messages.get("error.no-args")
+				: noArgsMessage;
+		
+		this.UNKNOWN_SUBCOMMAND_MESSAGE = unknownSubcommandMessage == null
+				? messages.get("error.unknown-subcommand")
+				: unknownSubcommandMessage;
 	}
 
 	/**
@@ -60,15 +64,20 @@ public abstract class AbstractSubcommandsHandler extends ExtendedCommandExecutor
 	@Override
 	public void executeCommand(CommandSender sender, CommandArguments args) {
 		if(args.isEmpty()) {
-			sender.sendMessage(this.noArgsMessage);
+			sender.sendMessage(NO_ARGS_MESSAGE);
 			return;
 		}
 		
 		String subcommand = args.get(0).toLowerCase();
 		if(!this.executors.containsKey(subcommand)) {
-			sender.sendMessage(this.unknownSubcommandMessage);
+			sender.sendMessage(UNKNOWN_SUBCOMMAND_MESSAGE);
 			return;
-		} else this.executors.get(subcommand).executeCommand(sender, args);
+		} else {
+			ExtendedSubcommandExecutor executor = this.executors.get(subcommand);
+			
+			args.remove(0);
+			executor.executeCommand(sender, args);
+		}
 	}
 	
 	@Override
@@ -80,16 +89,21 @@ public abstract class AbstractSubcommandsHandler extends ExtendedCommandExecutor
 		
 		CommandExecutionData data = new BaseExecutionData(sender, args);
 		
-		if(args.getCount() == 1)
+		if(args.size() == 1)
 			executors.forEach((s, e) -> {
 				if(!s.startsWith(subcommand) || !e.validateTabCompletion(data)) return;
 			
 				completions.add(s);
 			});
 		else {
-			if(!executors.containsKey(subcommand)) return null;
-			
-			return executors.get(subcommand).executeTabCompletion(sender, args);
+			if(!this.executors.containsKey(subcommand))
+				return null;
+			else {
+				ExtendedSubcommandExecutor executor = this.executors.get(subcommand);
+				
+				args.remove(0);
+				return executor.executeTabCompletion(sender, args);
+			}
 		}
 		
 		return completions;

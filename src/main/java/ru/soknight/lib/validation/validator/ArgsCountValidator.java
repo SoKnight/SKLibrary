@@ -20,7 +20,7 @@ public class ArgsCountValidator implements Validator {
 	public ValidationResult validate(CommandExecutionData data) {
 		CommandArguments args = data.getArgs();
 		
-		if(args != null && args.getCount() >= requiredArgsCount)
+		if(args != null && args.size() >= requiredArgsCount)
 			return new ValidationResult(true);
 		else return new ValidationResult(false, message);
 	}

@@ -1,16 +1,11 @@
 package ru.soknight.lib.argument;
 
+import java.util.List;
+
 /**
  * Presents any command arguments
  */
-public interface CommandArguments {
-	
-	/**
-	 * Gets argument by index (starts from 0)
-	 * @param index Index of target argument
-	 * @return The existing argument or null
-	 */
-	String get(int index);
+public interface CommandArguments extends List<String> {
 	
 	/**
 	 * Gets argument by index (starts from 0) and tries to parse double from him
@@ -34,22 +29,10 @@ public interface CommandArguments {
 	int getAsInteger(int index);
 	
 	/**
-	 * Gets count of stored arguments
-	 * @return The arguments count
-	 */
-	int getCount();
-	
-	/**
-	 * Checks if this object stores any arguments or not
-	 * @return 'true' if any arguments are presented here or 'false' if not
-	 */
-	boolean isEmpty();
-	
-	/**
 	 * Checks if argument with specified index is exists
 	 * @param index Index of target argument
 	 * @return 'true' if this argument is exists or 'false' if not
 	 */
-	boolean isExist(int index);
+	boolean hasArgument(int index);
 	
 }

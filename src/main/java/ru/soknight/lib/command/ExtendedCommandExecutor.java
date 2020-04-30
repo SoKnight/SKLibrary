@@ -8,7 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 
 import lombok.Getter;
-import ru.soknight.lib.argument.ArrayCommandArguments;
+import ru.soknight.lib.argument.BaseCommandArguments;
 import ru.soknight.lib.argument.CommandArguments;
 import ru.soknight.lib.configuration.Messages;
 
@@ -44,13 +44,13 @@ public abstract class ExtendedCommandExecutor extends ValidatableCommandExecutor
 	
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		executeCommand(sender, new ArrayCommandArguments(args));
+		executeCommand(sender, new BaseCommandArguments(args));
 		return true;
 	}
 	
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
-		return executeTabCompletion(sender, new ArrayCommandArguments(args));
+		return executeTabCompletion(sender, new BaseCommandArguments(args));
 	}
 	
 }
