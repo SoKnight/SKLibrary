@@ -8,8 +8,13 @@ import java.util.Arrays;
 public class BaseCommandArguments extends ArrayList<String> implements CommandArguments {
 	
 	public BaseCommandArguments(String[] arrayArguments) {
-		if(arrayArguments != null && arrayArguments.length == 0)
+		if(arrayArguments != null && arrayArguments.length != 0)
 			Arrays.stream(arrayArguments).forEach(s -> add(s));
+	}
+	
+	@Override
+	public String get(int index) {
+		return hasArgument(index) ? super.get(index) : null;
 	}
 
 	@Override
