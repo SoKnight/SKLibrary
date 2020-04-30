@@ -2,15 +2,23 @@
 Just usefull library for some my plugins and for you if you need :)
 
 ## Installing plugin
-You must install SKLibrary plugin on your server to use this library in your plugin. Soon I will public plugin jars on
-Spigot resources portal, but now you only can compile it from sources. Just follow instruction below. Instruction written for
-Linux distribs, but for Windows it will be similar.
+You must install `SKLibrary plugin` on your server to use this library in your plugin.
+You can download it from the [releases page](https://github.com/SoKnight/SKLibrary/releases) or 
+compile it from sources by instruction below.
 
-1) Download sources: `git clone https://github.com/SoKnight/SKLibrary.git sklibrary`
-2) Move into sources directory: `cd sklibrary`
-3) Compile sources: `mvn clean install`
-4) Open `sklibrary/target` and copy `sklibrary-1.0.9.jar` into server `plugins` folder
-5) Restart your server
+## Compiling from sources
+See instruction for compiling plugin JAR from sources below. Instruction presented for Linux systems, 
+but compiling process for Windows is similar.
+
+### Requirements
+You must have installed `Maven 3` and `JDK 8` (or above, but it isn't been tested).
+
+### Compiling
+1) Download sources using `git clone https://github.com/SoKnight/SKLibrary.git sklib`
+2) Go to repository output folder using `cd sklib`
+3) Compile JAR from sources using `mvn install`
+4) Go to maven output folder using `cd target`
+5) See the compiled `sklibrary-1.0.0.jar` :)
 
 ## Development
 To use my library in your project you need add repository `https://raw.github.com/SoKnight/SKLibrary/tree/mvn-repo/` and the
@@ -34,7 +42,7 @@ Add SKLibrary dependency:
         <dependency>
             <groupId>ru.soknight</groupId>
             <artifactId>sklibrary</artifactId>
-            <version>1.0.9</version>
+            <version>1.1.0</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
