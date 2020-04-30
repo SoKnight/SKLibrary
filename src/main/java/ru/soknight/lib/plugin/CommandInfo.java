@@ -4,6 +4,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.PluginDescriptionFile;
 
+import ru.soknight.lib.argument.CommandArguments;
 import ru.soknight.lib.command.ExtendedCommandExecutor;
 import ru.soknight.lib.configuration.Messages;
 import ru.soknight.lib.cooldown.preset.LitePlayersCooldownStorage;
@@ -28,7 +29,7 @@ public class CommandInfo extends ExtendedCommandExecutor {
 	}
 
 	@Override
-	public void executeCommand(CommandSender sender, String[] args) {
+	public void executeCommand(CommandSender sender, CommandArguments args) {
 		if(!validateExecution(sender, args)) return;
 		
 		String name = sender.getName();

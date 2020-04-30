@@ -8,6 +8,7 @@ import java.util.Map;
 import org.bukkit.command.CommandSender;
 
 import lombok.Setter;
+import ru.soknight.lib.argument.CommandArguments;
 import ru.soknight.lib.configuration.Messages;
 import ru.soknight.lib.validation.BaseExecutionData;
 import ru.soknight.lib.validation.CommandExecutionData;
@@ -57,13 +58,13 @@ public abstract class AbstractSubcommandsHandler extends ExtendedCommandExecutor
 	}
 	
 	@Override
-	public void executeCommand(CommandSender sender, String[] args) {
-		if(args.length == 0) {
+	public void executeCommand(CommandSender sender, CommandArguments args) {
+		if(args.isEmpty()) {
 			sender.sendMessage(this.noArgsMessage);
 			return;
 		}
 		
-		String subcommand = args[0].toLowerCase();
+		String subcommand = args.get(0).toLowerCase();
 		if(!this.executors.containsKey(subcommand)) {
 			sender.sendMessage(this.unknownSubcommandMessage);
 			return;
@@ -71,15 +72,15 @@ public abstract class AbstractSubcommandsHandler extends ExtendedCommandExecutor
 	}
 	
 	@Override
-	public List<String> executeTabCompletion(CommandSender sender, String[] args) {
-		if(args.length == 0 || executors.isEmpty()) return null;
+	public List<String> executeTabCompletion(CommandSender sender, CommandArguments args) {
+		if(args.isEmpty() || executors.isEmpty()) return null;
 		
 		List<String> completions = new ArrayList<>();
-		String subcommand = args[0].toLowerCase();
+		String subcommand = args.get(0).toLowerCase();
 		
 		CommandExecutionData data = new BaseExecutionData(sender, args);
 		
-		if(args.length == 1)
+		if(args.getCount() == 1)
 			executors.forEach((s, e) -> {
 				if(!s.startsWith(subcommand) || !e.validateTabCompletion(data)) return;
 			

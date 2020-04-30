@@ -4,6 +4,7 @@ import org.bukkit.command.CommandSender;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import ru.soknight.lib.argument.CommandArguments;
 
 /**
  * Basical execution data which contains command sender and command args
@@ -13,6 +14,6 @@ import lombok.Getter;
 public class BaseExecutionData implements CommandExecutionData {
 	
 	private final CommandSender sender;
-	private final String[] args;
+	private final CommandArguments args;
 
 }

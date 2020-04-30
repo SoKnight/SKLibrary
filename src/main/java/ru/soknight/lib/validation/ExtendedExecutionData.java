@@ -4,6 +4,7 @@ import org.bukkit.command.CommandSender;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import ru.soknight.lib.argument.CommandArguments;
 
 /**
  * Extended execution data which stores additional data array
@@ -13,7 +14,7 @@ import lombok.Getter;
 public class ExtendedExecutionData implements HoldingExecutionData {
 
 	private CommandSender sender;
-	private String[] args;
+	private CommandArguments args;
 	private String[] data;
 	
 	@Override

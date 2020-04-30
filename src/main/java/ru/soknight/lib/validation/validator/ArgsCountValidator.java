@@ -2,6 +2,7 @@ package ru.soknight.lib.validation.validator;
 
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import ru.soknight.lib.argument.CommandArguments;
 import ru.soknight.lib.validation.CommandExecutionData;
 import ru.soknight.lib.validation.ValidationResult;
 
@@ -17,9 +18,9 @@ public class ArgsCountValidator implements Validator {
 	
 	@Override
 	public ValidationResult validate(CommandExecutionData data) {
-		String[] args = data.getArgs();
+		CommandArguments args = data.getArgs();
 		
-		if(args != null && args.length >= requiredArgsCount)
+		if(args != null && args.getCount() >= requiredArgsCount)
 			return new ValidationResult(true);
 		else return new ValidationResult(false, message);
 	}

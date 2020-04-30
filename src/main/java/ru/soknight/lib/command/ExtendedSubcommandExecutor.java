@@ -5,6 +5,7 @@ import java.util.List;
 import org.bukkit.command.CommandSender;
 
 import lombok.Getter;
+import ru.soknight.lib.argument.CommandArguments;
 import ru.soknight.lib.configuration.Messages;
 
 /**
@@ -25,7 +26,7 @@ public abstract class ExtendedSubcommandExecutor extends ValidatableCommandExecu
 	 * @param sender - sender for execution
 	 * @param args - args for execution
 	 */
-	public abstract void executeCommand(CommandSender sender, String[] args);
+	public abstract void executeCommand(CommandSender sender, CommandArguments args);
 	
 	/**
 	 * Getting tab completions which will be sent to sender
@@ -33,7 +34,7 @@ public abstract class ExtendedSubcommandExecutor extends ValidatableCommandExecu
 	 * @param args - args for completion handling
 	 * @return list of completions with will be sent to sender
 	 */
-	public List<String> executeTabCompletion(CommandSender sender, String[] args) {
+	public List<String> executeTabCompletion(CommandSender sender, CommandArguments args) {
 		return null;
 	}
 	

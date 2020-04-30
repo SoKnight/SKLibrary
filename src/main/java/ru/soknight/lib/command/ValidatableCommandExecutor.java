@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.bukkit.command.CommandSender;
 
+import ru.soknight.lib.argument.CommandArguments;
 import ru.soknight.lib.configuration.Messages;
 import ru.soknight.lib.validation.BaseExecutionData;
 import ru.soknight.lib.validation.CommandExecutionData;
@@ -61,7 +62,7 @@ public abstract class ValidatableCommandExecutor {
 	 * @param args - command args to check
 	 * @return true if execution is valid and false if not
 	 */
-	public boolean validateExecution(CommandSender sender, String[] args) {
+	public boolean validateExecution(CommandSender sender, CommandArguments args) {
 		if(validators.isEmpty()) return true;
 		
 		CommandExecutionData data = new BaseExecutionData(sender, args);
@@ -93,7 +94,7 @@ public abstract class ValidatableCommandExecutor {
 	 * @param args - command args to check
 	 * @return true if execution is permitted and false if not
 	 */
-	public boolean validateTabCompletion(CommandSender sender, String[] args) {
+	public boolean validateTabCompletion(CommandSender sender, CommandArguments args) {
 		if(validators.isEmpty()) return true;
 		
 		CommandExecutionData data = new BaseExecutionData(sender, args);
