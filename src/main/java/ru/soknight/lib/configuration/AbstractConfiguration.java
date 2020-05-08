@@ -74,11 +74,11 @@ public abstract class AbstractConfiguration {
 	}
 	
 	/**
-	 * Refreshing file and file configuration with additional info output
-	 * Specify 'refresh(false)' to disable additional info output
+	 * Refreshing file and file configuration
+	 * Specify 'refresh(true)' to enable additional info output
 	 */
 	public void refresh() {
-		refresh(true);
+		refresh(false);
 	}
 	
 	/**
@@ -101,12 +101,18 @@ public abstract class AbstractConfiguration {
 		File file = new File(datafolder, filename);
 		if(!file.exists()) {
 			try {
-				if(source == null) file.createNewFile();
-				else Files.copy(source, file.toPath());
-				if(verbose) logger.info("Created new file '" + filename + "'.");
+				if(source == null) {
+					file.createNewFile();
+				} else {
+					Files.copy(source, file.toPath());
+				}
+				
+				if(verbose)
+					logger.info("Created new file '" + filename + "'.");
 			} catch (IOException e) {
 				logger.severe("Failed create file '" + filename + "' in " + datafolder.getPath() + "':" + e.getMessage());
-				if(verbose) e.printStackTrace();
+				if(verbose)
+					e.printStackTrace();
 				return;
 			}
 		}
