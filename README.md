@@ -31,7 +31,11 @@ Add Maven repository hosted by Github:
         ...
         <repository>
             <id>SKLibrary-mvn-repo</id>
-            <url>https://raw.github.com/SoKnight/SKLibrary/tree/mvn-repo/</url>
+            <url>https://github.com/SoKnight/SKLibrary/raw/mvn-repo/</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
         </repository>
     </repositories>
 ```
