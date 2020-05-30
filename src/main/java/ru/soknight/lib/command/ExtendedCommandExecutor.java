@@ -9,37 +9,19 @@ import org.bukkit.command.TabCompleter;
 
 import lombok.Getter;
 import ru.soknight.lib.argument.BaseCommandArguments;
-import ru.soknight.lib.argument.CommandArguments;
 import ru.soknight.lib.configuration.Messages;
 
 /**
  * Extended subcommand which extends ValidatableCommand
  */
 @Getter
-public abstract class ExtendedCommandExecutor extends ValidatableCommandExecutor implements CommandExecutor, TabCompleter {
+public abstract class ExtendedCommandExecutor extends ExtendedSubcommandExecutor implements CommandExecutor, TabCompleter {
 	
 	private final Messages messages;
 	
 	public ExtendedCommandExecutor(Messages messages) {
 		super(messages);
 		this.messages = messages;
-	}
-	
-	/**
-	 * Execute command with received sender and args
-	 * @param sender - sender for execution
-	 * @param args - args for execution
-	 */
-	public abstract void executeCommand(CommandSender sender, CommandArguments args);
-	
-	/**
-	 * Getting tab completions which will be sent to sender
-	 * @param sender - sender for completion handling
-	 * @param args - args for completion handling
-	 * @return list of completions with will be sent to sender
-	 */
-	public List<String> executeTabCompletion(CommandSender sender, CommandArguments args) {
-		return null;
 	}
 	
 	@Override
