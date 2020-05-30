@@ -21,7 +21,7 @@ You must have installed `Maven 3` and `JDK 8` (or above, but it isn't been teste
 5) See the compiled `sklibrary-1.4.2.jar` :)
 
 ## Development
-To use my library in your project you need add repository `https://raw.github.com/SoKnight/SKLibrary/tree/mvn-repo/` and the
+To use my library in your project you need add repository `https://github.com/SoKnight/SKLibrary/raw/mvn-repo/` and the
 library as project dependency. See instruction for Maven below. I don't use Gradle so I can't post instructions for it here.
 
 ### Maven project
