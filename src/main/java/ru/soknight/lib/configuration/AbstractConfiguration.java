@@ -169,7 +169,7 @@ public abstract class AbstractConfiguration {
 	 * @param section - section with target integer value in file
 	 * @return received integer or null if section not contains integer value
 	 */
-	public Integer getInt(String section) {
+	public int getInt(String section) {
 		return fileConfig.getInt(section);
 	}
 	
@@ -188,7 +188,7 @@ public abstract class AbstractConfiguration {
 	 * @param section - section with target double value in file
 	 * @return received double or null if section not contains double value
 	 */
-	public Double getDouble(String section) {
+	public double getDouble(String section) {
 		return fileConfig.getDouble(section);
 	}
 	
@@ -200,6 +200,25 @@ public abstract class AbstractConfiguration {
 	 */
 	public double getDouble(String section, double def) {
 		return fileConfig.getDouble(section, def);
+	}
+	
+	/**
+	 * Getting float from file
+	 * @param section - section with target float value in file
+	 * @return received float or null if section not contains float value
+	 */
+	public float getFloat(String section) {
+		return (float) fileConfig.getDouble(section);
+	}
+	
+	/**
+	 * Getting float from file
+	 * @param section - section with target float value in file
+	 * @param def - default output value if section not contains float value
+	 * @return received float or 'def' value if section not contains float value
+	 */
+	public float getFloat(String section, float def) {
+		return (float) fileConfig.getDouble(section, def);
 	}
 	
 	/**

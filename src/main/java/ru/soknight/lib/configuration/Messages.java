@@ -2,6 +2,7 @@ package ru.soknight.lib.configuration;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.command.CommandSender;
@@ -108,6 +109,24 @@ public class Messages extends AbstractConfiguration {
 	}
 	
 	/**
+	 * Sending messages array to sender
+	 * @param sender Message receiver
+	 * @param messages Messages array which will be sent
+	 */
+	public void send(CommandSender sender, String[] messages) {
+		send(sender, messages, false);
+	}
+	
+	/**
+	 * Sending messages list to sender
+	 * @param sender Message receiver
+	 * @param messages Messages list which will be sent
+	 */
+	public void send(CommandSender sender, List<String> messages) {
+		send(sender, messages.toArray(new String[0]), false);
+	}
+	
+	/**
 	 * Sending message to sender
 	 * @param sender Message receiver
 	 * @param message Message which will be sent
@@ -120,6 +139,40 @@ public class Messages extends AbstractConfiguration {
 			BaseComponent[] msg = TextComponent.fromLegacyText(message);
 			((Player) sender).spigot().sendMessage(ChatMessageType.ACTION_BAR, msg);
 		} else sender.sendMessage(message);
+	}
+	
+	/**
+	 * Sending messages array to sender
+	 * @param sender Message receiver
+	 * @param messages Messages array which will be sent
+	 * @param toActionbar Should method to send this messages into player's actionbar if it's possible
+	 */
+	public void send(CommandSender sender, String[] messages, boolean toActionbar) {
+		if(sender == null || messages == null || messages.length == 0) return;
+		
+		if(toActionbar && sender instanceof Player) {
+			Arrays.stream(messages).forEach(message -> {
+				BaseComponent[] msg = TextComponent.fromLegacyText(message);
+				((Player) sender).spigot().sendMessage(ChatMessageType.ACTION_BAR, msg);
+			});
+		} else sender.sendMessage(messages);
+	}
+	
+	/**
+	 * Sending messages list to sender
+	 * @param sender Message receiver
+	 * @param messages Messages list which will be sent
+	 * @param toActionbar Should method to send this messages into player's actionbar if it's possible
+	 */
+	public void send(CommandSender sender, List<String> messages, boolean toActionbar) {
+		if(sender == null || messages == null || messages.isEmpty()) return;
+		
+		if(toActionbar && sender instanceof Player) {
+			messages.forEach(message -> {
+				BaseComponent[] msg = TextComponent.fromLegacyText(message);
+				((Player) sender).spigot().sendMessage(ChatMessageType.ACTION_BAR, msg);
+			});
+		} else sender.sendMessage(messages.toArray(new String[0]));
 	}
 	
 	/**

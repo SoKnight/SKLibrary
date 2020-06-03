@@ -4,25 +4,17 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import ru.soknight.lib.configuration.Configuration;
 import ru.soknight.lib.configuration.Messages;
-import ru.soknight.lib.logging.PluginLogger;
 
 public class SKLibraryPlugin extends JavaPlugin {
 	
 	@Override
 	public void onEnable() {
-		PluginLogger logger = new PluginLogger(this);
-		
 		Configuration config = new Configuration(this, "config.yml");
-		if(!config.getBoolean("enabled")) {
-			logger.info("Library plugin functional is unavailable.");
+		if(!config.getBoolean("enabled"))
 			return;
-		}
 		
 		Messages messages = new Messages(this, "messages.yml");
-		
-		getCommand("sklibrary").setExecutor(new CommandInfo(this, messages));
-		
-		logger.info("Library plugin functional is available.");
+		new CommandInfo(this, messages);
 	}
 	
 }
