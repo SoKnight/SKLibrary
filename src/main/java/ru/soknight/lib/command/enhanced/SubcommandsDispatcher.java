@@ -21,7 +21,7 @@ import ru.soknight.lib.configuration.Messages;
  * For example: <b>/ap manage add|list|remove</b>.
  * Good luck :D
  */
-public class SubcommandsDispatcher extends StandaloneExecutor {
+public abstract class SubcommandsDispatcher extends StandaloneExecutor {
 
 	private final Map<String, EnhancedExecutor> executors = new HashMap<>();
 	

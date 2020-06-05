@@ -8,7 +8,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import ru.soknight.lib.argument.CommandArguments;
-import ru.soknight.lib.command.response.CommandResponseMessage;
 import ru.soknight.lib.command.response.CommandResponseType;
 import ru.soknight.lib.configuration.Messages;
 
@@ -18,7 +17,7 @@ import ru.soknight.lib.configuration.Messages;
 public abstract class EnhancedExecutor extends ExecutionHelper {
 
 	private final Messages messages;
-	private final Map<CommandResponseType, CommandResponseMessage> responses;
+	private final Map<CommandResponseType, String> responses;
 	
 	private String permission = null;
 	private int requiredArgsCount = 0;
@@ -94,8 +93,8 @@ public abstract class EnhancedExecutor extends ExecutionHelper {
 	public void sendResponseMessage(CommandSender sender, CommandResponseType type) {
 		if(type == null) return;
 		
-		CommandResponseMessage message = responses.get(type);
-		String response = message != null ? message.getMessage() : ChatColor.RED + type.toString().toLowerCase();
+		String message = responses.get(type);
+		String response = message != null ? message : ChatColor.RED + type.toString().toLowerCase();
 		
 		if(response != null)
 			sender.sendMessage(response);
@@ -130,7 +129,7 @@ public abstract class EnhancedExecutor extends ExecutionHelper {
 	 * 
 	 * @see EnhancedExecutor#setResponseMessage(CommandResponseType, String)
 	 */
-	public CommandResponseMessage getResponseMessage(CommandResponseType type) {
+	public String getResponseMessage(CommandResponseType type) {
 		return responses.get(type);
 	}
 	
@@ -142,7 +141,7 @@ public abstract class EnhancedExecutor extends ExecutionHelper {
 	 * @see EnhancedExecutor#getResponseMessage(CommandResponseType)
 	 */
 	public void setResponseMessage(CommandResponseType type, String message) {
-		responses.put(type, new CommandResponseMessage(message));
+		responses.put(type, message);
 	}
 	
 	/**
@@ -155,7 +154,7 @@ public abstract class EnhancedExecutor extends ExecutionHelper {
 	 * @see EnhancedExecutor#getResponseMessage(CommandResponseType)
 	 */
 	public void setResponseMessageByKey(CommandResponseType type, String messageKey) {
-		responses.put(type, new CommandResponseMessage(messageKey, messages));
+		responses.put(type, messages != null ? messages.get(messageKey) : null);
 	}
 	
 	/**
