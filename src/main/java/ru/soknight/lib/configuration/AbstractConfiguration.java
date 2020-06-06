@@ -7,7 +7,9 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -123,6 +125,15 @@ public abstract class AbstractConfiguration {
 	/*
 	 * Methods from FileConfiguration
 	 */
+	
+	/**
+	 * Getting child section from file
+	 * @param section - target section
+	 * @return child section if getting of it is possible (may be null)
+	 */
+	public ConfigurationSection getSection(String section) {
+		return fileConfig.getConfigurationSection(section);
+	}
 	
 	/**
 	 * Getting string from file
@@ -261,6 +272,44 @@ public abstract class AbstractConfiguration {
 		List<String> colored = new ArrayList<>();
 		list.forEach(s -> colored.add(s.replace("&", "\u00a7")));
 		return colored;
+	}
+	
+	/**
+	 * Formatting your custom message
+	 * @param section - section with target message in file
+	 * @param replaces - array of string with this syntax: placeholder value placeholder value...
+	 * @return formatted string with replaced placeholders
+	 */
+	public String format(String message, Object... replaces) {
+		if(replaces == null) return message;
+		
+		int length = replaces.length;
+		if(length == 0) return message;
+		
+		for(int i = 0; i < length; i += 2) {
+			if(i == length - 1) continue;
+			
+			String placeholder = replaces[i].toString();
+			String value = replaces[i + 1].toString();
+			
+			message = message.replace(placeholder, value);
+		}
+		
+		return message;
+	}
+	
+	/**
+	 * Formatting strings list using specified replaces objects array
+	 * @param list - target list to format
+	 * @param replaces - objects array of replaces formatted as '..., key, value, ...'
+	 * @return formatted strings list with replaced placeholders
+	 */
+	public List<String> formatList(List<String> list, Object... replaces) {
+		if(list == null || replaces == null || list.isEmpty()) return list;
+		
+		return list.stream()
+				.map(s -> format(s, replaces))
+				.collect(Collectors.toList());
 	}
 	
 }

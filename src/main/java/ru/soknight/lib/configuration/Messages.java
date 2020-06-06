@@ -60,30 +60,6 @@ public class Messages extends AbstractConfiguration {
 	}
 	
 	/**
-	 * Formatting your custom message
-	 * @param section Section with target message in file
-	 * @param replaces Array of string with this syntax: placeholder value placeholder value...
-	 * @return Formatted string with replaced placeholders
-	 */
-	public String format(String message, Object... replaces) {
-		if(replaces == null) return message;
-		
-		int length = replaces.length;
-		if(length == 0) return message;
-		
-		for(int i = 0; i < length; i += 2) {
-			if(i == length - 1) continue;
-			
-			String placeholder = replaces[i].toString();
-			String value = replaces[i + 1].toString();
-			
-			message = message.replace(placeholder, value);
-		}
-		
-		return message;
-	}
-	
-	/**
 	 * Formatting exist message from configuration by section key
 	 * @param section Section with target message in file
 	 * @param replaces Array of string with this syntax: placeholder value placeholder value...
