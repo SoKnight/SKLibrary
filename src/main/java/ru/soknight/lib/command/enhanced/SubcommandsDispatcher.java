@@ -82,7 +82,7 @@ public abstract class SubcommandsDispatcher extends StandaloneExecutor {
 					.collect(Collectors.toList());
 		}
 		
-		String subcommand = args.get(0).toLowerCase();
+		String subcommand = args.remove(0).toLowerCase();
 		return executors.containsKey(subcommand)
 				? executors.get(subcommand).validateAndTabComplete(sender, args)
 				: null;
