@@ -1,5 +1,5 @@
 # SKLibrary
-Just usefull library for some my plugins and for you if you need :)
+Just useful library for some my plugins and for you if you need :)
 
 ## Installing plugin
 You must install `SKLibrary plugin` on your server to use this library in your plugin.
