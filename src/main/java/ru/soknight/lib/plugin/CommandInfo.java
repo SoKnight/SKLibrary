@@ -5,26 +5,25 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.PluginDescriptionFile;
 
 import ru.soknight.lib.argument.CommandArguments;
-import ru.soknight.lib.command.enhanced.StandaloneExecutor;
+import ru.soknight.lib.command.preset.standalone.PermissibleCommand;
 import ru.soknight.lib.configuration.Messages;
 import ru.soknight.lib.cooldown.preset.LitePlayersCooldownStorage;
 import ru.soknight.lib.cooldown.preset.PlayersCooldownStorage;
 import ru.soknight.lib.format.DateFormatter;
 
-public class CommandInfo extends StandaloneExecutor {
+public class CommandInfo extends PermissibleCommand {
 	
 	private final PluginDescriptionFile description;
 	private final PlayersCooldownStorage cooldownStorage;
 	private final DateFormatter dateFormatter;
 
 	public CommandInfo(SKLibraryPlugin plugin, Messages messages) {
-		super("sklibrary", messages);
+		super("sklibrary", "sklibrary.command.info", messages);
 		
 		this.description = plugin.getDescription();
 		this.cooldownStorage = new LitePlayersCooldownStorage(60);
 		this.dateFormatter = new DateFormatter();
 		
-		super.setPermission("sklibrary.info");
 		super.register(plugin);
 	}
 
@@ -52,6 +51,8 @@ public class CommandInfo extends StandaloneExecutor {
 		
 		sender.sendMessage(ChatColor.GRAY + "   SoKnight's library information");
 		sender.sendMessage(" Plugin version: " + ChatColor.AQUA + pversion);
+		sender.sendMessage(" Changes: " + ChatColor.AQUA + "Added the new help command environment");
+		sender.sendMessage(" ");
 		sender.sendMessage(" Author & Developer: " + ChatColor.AQUA + "SoKnight");
 		sender.sendMessage(" Github: " + ChatColor.AQUA + "https://github.com/SoKnight/SKLibrary");
 		sender.sendMessage(" ");

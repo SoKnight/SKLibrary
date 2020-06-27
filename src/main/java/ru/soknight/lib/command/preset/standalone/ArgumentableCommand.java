@@ -17,7 +17,8 @@ public abstract class ArgumentableCommand extends PermissibleCommand {
 		
 		super.setRequiredArgsCount(requiredArgsCount);
 		
-		String wrongsyntax = messages.getFormatted("error.wrong-syntax", "%command%", parent);
+		String wrongsyntax = messages.getFormatted("error.wrong-syntax",
+				"%command%", parent != null ? parent : "");
 		
 		super.setResponseMessage(CommandResponseType.WRONG_SYNTAX, wrongsyntax);
 	}

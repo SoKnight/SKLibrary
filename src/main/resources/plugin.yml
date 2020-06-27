@@ -7,5 +7,5 @@ commands:
   sklibrary:
     description: Display plugin information
 permissions:
-  sklibrary.info:
+  sklibrary.command.info:
     default: true
