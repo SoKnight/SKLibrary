@@ -26,7 +26,7 @@ See instruction for Maven below. I don't use Gradle so I can't post instructions
 
 ### Maven project
 Add Maven repository:
-```
+```xml
     <repositories>
         <repository>
             <id>jitpack.io</id>
@@ -35,7 +35,7 @@ Add Maven repository:
     </repositories>
 ```
 Add SKLibrary dependency:
-```
+```xml
     <dependencies>
         <!-- SKLibrary -->
         <dependency>
