@@ -2,6 +2,7 @@ package ru.soknight.lib.component.injection;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,7 +42,7 @@ public class TextComponentInjector {
                 .map(component -> {
                     String text = component.toPlainText();
                     if(!text.contains(placeholder))
-                        return component;
+                        return Collections.singletonList(component);
                     
                     String before = null;
                     String after = null;
@@ -69,8 +70,9 @@ public class TextComponentInjector {
                         components.add(afterComponent);
                     }
                     
-                    return new TextComponent(components.toArray(new BaseComponent[0]));
+                    return components;
                 })
+                .flatMap(List::stream)
                 .collect(Collectors.toList())
                 .toArray(new BaseComponent[0]);
     }
