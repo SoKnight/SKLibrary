@@ -55,8 +55,6 @@ public class CommandInfo extends PermissibleCommand {
 		
 		sender.sendMessage(ChatColor.GRAY + "   SoKnight's library information");
 		sender.sendMessage(" Plugin version: " + ChatColor.AQUA + pversion);
-		sender.sendMessage(" Changes: " + ChatColor.AQUA + "TextComponent injectable messages API");
-		sender.sendMessage(" ");
 		sender.sendMessage(" Author & Developer: " + ChatColor.AQUA + "SoKnight");
 		
 		String text = " Github: " + ChatColor.AQUA + "Click %link% to open";
