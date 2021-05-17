@@ -22,7 +22,7 @@ public class HelpMessageFactory {
 	
 	/**
 	 * Creates the new factory instance
-	 * @param messages The messages instance to get some messages
+	 * @param messages The messages instance to getOrDefault some messages
 	 */
 	public HelpMessageFactory(Messages messages) {
 		this.messages = messages;
@@ -123,9 +123,7 @@ public class HelpMessageFactory {
 	 * @see HelpMessageFactory#helpLineFormat(String)
 	 */
 	public HelpMessageFactory helpLineFormatFrom(String path) {
-		String format = messages.get(path);
-		
-		this.helpLineFormat = format;
+		this.helpLineFormat = messages.get(path);
 		return this;
 	}
 

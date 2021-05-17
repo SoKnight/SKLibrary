@@ -41,7 +41,7 @@ Add SKLibrary dependency:
         <dependency>
             <groupId>com.github.SoKnight</groupId>
             <artifactId>SKLibrary</artifactId>
-            <version>1.10.2</version>
+            <version>1.11.1</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

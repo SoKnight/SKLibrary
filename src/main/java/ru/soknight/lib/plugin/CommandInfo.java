@@ -45,7 +45,9 @@ public class CommandInfo extends PermissibleCommand {
 				sender.sendMessage(ChatColor.RED + "You will can use that after " + formatted + ".");
 				return;
 			// Removes useless nullified cooldown
-			} else cooldownStorage.removeCooldown(name);
+			} else {
+				cooldownStorage.removeCooldown(name);
+			}
 		}
 		
 		// Resets player's cooldown

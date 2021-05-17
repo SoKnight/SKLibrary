@@ -8,21 +8,21 @@ public interface CooldownStorage<K> {
 	
 	/**
 	 * Gets the elapsed time from cooldown reset date in milliseconds
-	 * @param target Target key value to get (player name and etc.)
+	 * @param target Target key value to getOrDefault (player name and etc.)
 	 * @return The elapsed time in milliseconds or -1 if cooldown is not set
 	 */
 	long getElapsedTime(K target);
 	
 	/**
 	 * Gets the remained time of cooldown in milliseconds
-	 * @param target Target key value to get (player name and etc.)
+	 * @param target Target key value to getOrDefault (player name and etc.)
 	 * @return The remained time in milliseconds or -1 of cooldown is not set
 	 */
 	long getRemainedTime(K target);
 	
 	/**
 	 * Gets the cooldown reset date if it's has been reset
-	 * @param target Target key value to get (player name and etc.)
+	 * @param target Target key value to getOrDefault (player name and etc.)
 	 * @return The cooldown reset date in milliseconds or -1 if it is not set
 	 */
 	long getResetDate(K target);

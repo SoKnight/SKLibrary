@@ -22,8 +22,8 @@ public abstract class ModifiedDispatcher extends SubcommandsDispatcher {
 	public ModifiedDispatcher(String command, Messages messages) {
 		super(command, messages);
 		
-		String noargs = messages.getFormatted("error.no-args", "%command%", command);
-		String unknown = messages.getFormatted("error.unknown-subcommand", "%command%", command);
+		String noargs = messages.getFormattedOrDefault("error.no-args", "%command%", command);
+		String unknown = messages.getFormattedOrDefault("error.unknown-subcommand", "%command%", command);
 		
 		super.setResponseMessage(CommandResponseType.NO_ARGS, noargs);
 		super.setResponseMessage(CommandResponseType.UNKNOWN_SUBCOMMAND, unknown);

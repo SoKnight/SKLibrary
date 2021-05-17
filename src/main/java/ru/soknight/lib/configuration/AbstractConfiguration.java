@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import lombok.Setter;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -20,9 +21,9 @@ import lombok.NoArgsConstructor;
 import net.md_5.bungee.api.ChatColor;
 
 /**
- * Abstract configuration instance which contains basical methods for working with configuration file
+ * Abstract configuration instance which contains basic methods for working with configuration file
  */
-@Data
+@Getter @Setter
 @NoArgsConstructor
 public abstract class AbstractConfiguration {
 
@@ -64,15 +65,15 @@ public abstract class AbstractConfiguration {
 	/**
 	 * Configuration file object with methods, implemented from FileConfiguration
 	 * @param plugin - owner plugin for configuration file
-	 * @param datafolder - custom data folder for configuration file
+	 * @param dataFolder - custom data folder for configuration file
 	 * @param source - input stream of custom specified internal resource
 	 * @param filename - name of destination file
 	 */
-	public AbstractConfiguration(JavaPlugin plugin, File datafolder, InputStream source, String filename) {
+	public AbstractConfiguration(JavaPlugin plugin, File dataFolder, InputStream source, String filename) {
 		this.plugin = plugin;
 		this.filename = filename;
 		this.source = source;
-		this.datafolder = datafolder;
+		this.datafolder = dataFolder;
 		refresh();
 	}
 	
@@ -287,8 +288,7 @@ public abstract class AbstractConfiguration {
 	 */
 	public List<String> getColoredList(String section) {
 		List<String> list = fileConfig.getStringList(section);
-		if(list == null) return null;
-		
+
 		List<String> colored = new ArrayList<>();
 		list.forEach(s -> colored.add(colorize(s)));
 		return colored;
@@ -305,21 +305,21 @@ public abstract class AbstractConfiguration {
 	
 	/**
 	 * Formatting your custom message
-	 * @param section - section with target message in file
-	 * @param replaces - array of string with this syntax: placeholder value placeholder value...
+	 * @param message - the message to format
+	 * @param replacements - array of string with this syntax: placeholder value placeholder value...
 	 * @return formatted string with replaced placeholders
 	 */
-	public String format(String message, Object... replaces) {
-		if(replaces == null) return message;
+	public String format(String message, Object... replacements) {
+		if(replacements == null) return message;
 		
-		int length = replaces.length;
+		int length = replacements.length;
 		if(length == 0) return message;
 		
 		for(int i = 0; i < length; i += 2) {
 			if(i == length - 1) continue;
 			
-			String placeholder = replaces[i].toString();
-			String value = replaces[i + 1].toString();
+			String placeholder = replacements[i].toString();
+			String value = replacements[i + 1].toString();
 			
 			message = message.replace(placeholder, value);
 		}
@@ -328,16 +328,16 @@ public abstract class AbstractConfiguration {
 	}
 	
 	/**
-	 * Formatting strings list using specified replaces objects array
+	 * Formatting strings list using specified replacements objects array
 	 * @param list - target list to format
-	 * @param replaces - objects array of replaces formatted as '..., key, value, ...'
+	 * @param replacements - objects array of replacements formatted as '..., key, value, ...'
 	 * @return formatted strings list with replaced placeholders
 	 */
-	public List<String> formatList(List<String> list, Object... replaces) {
-		if(list == null || replaces == null || list.isEmpty()) return list;
+	public List<String> formatList(List<String> list, Object... replacements) {
+		if(list == null || replacements == null || list.isEmpty()) return list;
 		
 		return list.stream()
-				.map(s -> format(s, replaces))
+				.map(s -> format(s, replacements))
 				.collect(Collectors.toList());
 	}
 	

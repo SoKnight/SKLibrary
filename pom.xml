@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ru.soknight</groupId>
     <artifactId>sklibrary</artifactId>
-    <version>1.10.3</version>
+    <version>1.11.1</version>
     
     <name>SKLibrary</name>
     <description>Library for SoKnight's plugins</description>
@@ -32,7 +32,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.16</version>
+            <version>1.18.20</version>
             <scope>provided</scope>
         </dependency>
         <!-- ORMLite -->
