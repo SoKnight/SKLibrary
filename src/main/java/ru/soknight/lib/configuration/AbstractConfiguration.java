@@ -1,5 +1,14 @@
 package ru.soknight.lib.configuration;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import net.md_5.bungee.api.ChatColor;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.java.JavaPlugin;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,17 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-
-import lombok.Setter;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.java.JavaPlugin;
-
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import net.md_5.bungee.api.ChatColor;
 
 /**
  * Abstract configuration instance which contains basic methods for working with configuration file
@@ -319,9 +317,9 @@ public abstract class AbstractConfiguration {
 			if(i == length - 1) continue;
 			
 			String placeholder = replacements[i].toString();
-			String value = replacements[i + 1].toString();
+			Object value = replacements[i + 1];
 			
-			message = message.replace(placeholder, value);
+			message = message.replace(placeholder, value != null ? value.toString() : "");
 		}
 		
 		return message;

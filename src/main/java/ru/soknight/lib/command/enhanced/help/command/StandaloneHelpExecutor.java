@@ -1,14 +1,14 @@
 package ru.soknight.lib.command.enhanced.help.command;
 
-import java.util.List;
-
 import org.bukkit.command.CommandSender;
-
 import ru.soknight.lib.argument.CommandArguments;
 import ru.soknight.lib.command.enhanced.StandaloneExecutor;
 import ru.soknight.lib.command.enhanced.help.HelpMessageFactory;
 import ru.soknight.lib.command.enhanced.help.line.HelpLine;
+import ru.soknight.lib.command.response.CommandResponseType;
 import ru.soknight.lib.configuration.Messages;
+
+import java.util.List;
 
 public abstract class StandaloneHelpExecutor extends StandaloneExecutor {
 
@@ -21,12 +21,17 @@ public abstract class StandaloneHelpExecutor extends StandaloneExecutor {
 	public StandaloneHelpExecutor(String command, Messages messages) {
 		super(command, messages);
 		
-		this.factory = new HelpMessageFactory(messages);
+		this.factory = new HelpMessageFactory(messages, this::completeMessage);
 		this.messages = messages;
 	}
 	
 	protected HelpMessageFactory factory() {
 		return factory;
+	}
+
+	protected void requirePermission(String permission) {
+		super.setPermission(permission);
+		super.setResponseMessageByKey(CommandResponseType.NO_PERMISSIONS, "error.no-permissions");
 	}
 	
 	protected void completeMessage() {
@@ -56,9 +61,7 @@ public abstract class StandaloneHelpExecutor extends StandaloneExecutor {
 	}
 	
 	protected void setHeaderFrom(String path) {
-		String header = messages.get(path);
-		
-		this.header = header;
+		this.header = messages.get(path);
 	}
 	
 	protected void setFooter(String footer) {
@@ -66,9 +69,7 @@ public abstract class StandaloneHelpExecutor extends StandaloneExecutor {
 	}
 	
 	protected void setFooterFrom(String path) {
-		String footer = messages.get(path);
-		
-		this.footer = footer;
+		this.footer = messages.get(path);
 	}
 	
 	@Override

@@ -10,17 +10,19 @@ import ru.soknight.lib.configuration.Messages;
  */
 public abstract class ArgumentableCommand extends PermissibleCommand {
 
-	public ArgumentableCommand(String command, String parent, String permission,
-			int requiredArgsCount, Messages messages) {
-		
+	public ArgumentableCommand(String command, String parent, String permission, int requiredArgsCount, Messages messages) {
 		super(command, permission, messages);
 		
 		super.setRequiredArgsCount(requiredArgsCount);
-		
-		String wrongsyntax = messages.getFormattedOrDefault("error.wrong-syntax",
-				"%command%", parent != null ? parent : "");
-		
-		super.setResponseMessage(CommandResponseType.WRONG_SYNTAX, wrongsyntax);
+		super.setResponseMessageByKey(
+				CommandResponseType.WRONG_SYNTAX,
+				"error.wrong-syntax",
+				"%command%", parent
+		);
+	}
+
+	public ArgumentableCommand(String command, String permission, int requiredArgsCount, Messages messages) {
+		this(command, null, permission, requiredArgsCount, messages);
 	}
 
 }

@@ -1,15 +1,14 @@
 package ru.soknight.lib.command.enhanced;
 
+import org.bukkit.command.CommandSender;
+import ru.soknight.lib.argument.CommandArguments;
+import ru.soknight.lib.command.response.CommandResponseType;
+import ru.soknight.lib.configuration.Messages;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import org.bukkit.command.CommandSender;
-
-import ru.soknight.lib.argument.CommandArguments;
-import ru.soknight.lib.command.response.CommandResponseType;
-import ru.soknight.lib.configuration.Messages;
 
 /**
  * The dispatcher for subcommands executors which will be added to internal list
@@ -73,15 +72,15 @@ public abstract class SubcommandsDispatcher extends StandaloneExecutor {
 	protected List<String> executeTabCompletion(CommandSender sender, CommandArguments args) {
 		if(args.isEmpty() || executors.isEmpty()) return null;
 		
-		if(args.size() == 1) {
+		if(args.size() == 1 && !args.anyParametersFound()) {
 			String arg = getLastArgument(args, true);
 			return executors.keySet()
-					.parallelStream()
+					.stream()
 					.map(String::toLowerCase)
 					.filter(s -> s.startsWith(arg))
 					.collect(Collectors.toList());
 		}
-		
+
 		String subcommand = args.remove(0).toLowerCase();
 		return executors.containsKey(subcommand)
 				? executors.get(subcommand).validateAndTabComplete(sender, args)

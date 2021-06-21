@@ -14,11 +14,15 @@ public abstract class ArgumentableSubcommand extends PermissibleSubcommand {
 		super(permission, messages);
 		
 		super.setRequiredArgsCount(requiredArgsCount);
-		
-		String wrongsyntax = messages.getFormattedOrDefault("error.wrong-syntax",
-				"%command%", parent != null ? parent : "");
-		
-		super.setResponseMessage(CommandResponseType.WRONG_SYNTAX, wrongsyntax);
+		super.setResponseMessageByKey(
+				CommandResponseType.WRONG_SYNTAX,
+				"error.wrong-syntax",
+				"%command%", parent
+		);
+	}
+
+	public ArgumentableSubcommand(String permission, int requiredArgsCount, Messages messages) {
+		this(null, permission, requiredArgsCount, messages);
 	}
 
 }

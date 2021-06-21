@@ -4,7 +4,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
 import ru.soknight.lib.argument.CommandArguments;
 
 /**
@@ -57,8 +56,10 @@ public abstract class ExecutionHelper {
 	 * @param nickname The nickname of target player
 	 * @return The 'true' value if offline player is exists or 'false' if not
 	 */
+	@SuppressWarnings("deprecation")
 	public boolean isPlayerExists(String nickname) {
-		return Bukkit.getOfflinePlayer(nickname) != null;
+		OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(nickname);
+		return offlinePlayer.isOnline() || offlinePlayer.hasPlayedBefore();
 	}
 	
 	/**
@@ -67,10 +68,7 @@ public abstract class ExecutionHelper {
 	 * @return The 'true' value if player is online or 'false' if not
 	 */
 	public boolean isPlayerOnline(String nickname) {
-		OfflinePlayer offline = Bukkit.getOfflinePlayer(nickname);
-		if(offline == null) return false;
-		
-		return offline.isOnline();
+		return Bukkit.getPlayer(nickname) != null;
 	}
 	
 	/**
@@ -121,12 +119,7 @@ public abstract class ExecutionHelper {
 	 * @return The 'true' value if this string is boolean of 'false' if not
 	 */
 	public boolean isBoolean(String source) {
-		try {
-			Boolean.parseBoolean(source);
-			return true;
-		} catch (Exception e) {
-			return false;
-		}
+		return source.equalsIgnoreCase("true") || source.equalsIgnoreCase("false");
 	}
 	
 }

@@ -1,19 +1,22 @@
 package ru.soknight.lib.format;
 
+import lombok.Data;
+import lombok.Getter;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import lombok.Data;
-import lombok.Getter;
-
 /**
  * Formats amount of seconds to multiple {@link TimeUnit} string
  */
 @Data
 public class DateFormatter {
+
+	public static final DateFormatter DEFAULT_ENGLISH;
+	public static final DateFormatter DEFAULT_RUSSIAN;
 
 	private String separator;
 	private final Map<TimeUnit, String> customFormats;
@@ -96,11 +99,11 @@ public class DateFormatter {
 		String format = customFormats.containsKey(unit) ? customFormats.get(unit) : unit.getDefaultFormat();
 		return format.replace(unit.getPlaceholder(), String.valueOf(count));
 	}
-	
+
 	@Getter
 	private static class TimeUnitsConverter {
 		
-		private long seconds = 0;
+		private long seconds;
 		private long minutes = 0;
 	    private long hours = 0;
 	    private long days = 0;
@@ -151,6 +154,13 @@ public class DateFormatter {
 		        }
 	        }
 	    }
+
+	}
+
+	static {
+		DEFAULT_ENGLISH = new DateFormatter();
+		DEFAULT_RUSSIAN = new DateFormatter();
+		DEFAULT_RUSSIAN.loadRussianTimeUnitFormats();
 	}
 	
 }

@@ -1,17 +1,16 @@
 package ru.soknight.lib.command.enhanced;
 
-import java.util.List;
-
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
-
 import ru.soknight.lib.argument.BaseCommandArguments;
 import ru.soknight.lib.argument.CommandArguments;
 import ru.soknight.lib.command.MergedExecutor;
 import ru.soknight.lib.configuration.Messages;
+import ru.soknight.lib.exception.ParameterValueRequiredException;
+
+import java.util.List;
 
 /**
  * <u>Use it to create a standalone command in your plugin</u>
@@ -39,7 +38,7 @@ public abstract class StandaloneExecutor extends EnhancedExecutor implements Mer
 	 * Registers this class as executor for plugin's command
 	 * <p>
 	 * So by default this class <u>will not be registered as tab-completer</u>.
-	 * If you want it, you need to use {@link EnhancedExecutor#register(Plugin, boolean)}
+	 * If you want it, you need to use {@link StandaloneExecutor#register(JavaPlugin, boolean)}
 	 * and send 'true' boolean parameter to register the tab-completer
 	 * <p>
 	 * If the internal <u>command name is null</u> or <u>plugin is null</u> or
@@ -74,13 +73,22 @@ public abstract class StandaloneExecutor extends EnhancedExecutor implements Mer
 	
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-		return validateAndTabComplete(sender, new BaseCommandArguments(args));
+		try {
+			return validateAndTabComplete(sender, new BaseCommandArguments(sender, args, parameterRegistry()));
+		} catch (ParameterValueRequiredException ignored) {
+			return null;
+		}
 	}
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		validateAndExecute(sender, new BaseCommandArguments(args));
-		return true;
+		try {
+			validateAndExecute(sender, new BaseCommandArguments(sender, args, parameterRegistry()));
+			return true;
+		} catch (ParameterValueRequiredException ex) {
+			onParameterValueUnspecified(sender, ex.getParameter());
+			return true;
+		}
 	}
 	
 	/**

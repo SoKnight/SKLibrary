@@ -16,10 +16,11 @@ public abstract class OmnipotentCommand extends ArgumentableCommand {
 		super(command, parent, permission, requiredArgsCount, messages);
 		
 		super.setPlayerOnly(true);
-		
-		String playeronly = messages.get("error.only-for-players");
-		
-		super.setResponseMessage(CommandResponseType.ONLY_FOR_PLAYERS, playeronly);
+		super.setResponseMessageByKey(CommandResponseType.ONLY_FOR_PLAYERS, "error.only-for-players");
+	}
+
+	public OmnipotentCommand(String command, String permission, int requiredArgsCount, Messages messages) {
+		this(command, null, permission, requiredArgsCount, messages);
 	}
 
 }

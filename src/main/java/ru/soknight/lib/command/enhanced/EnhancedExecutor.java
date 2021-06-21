@@ -1,15 +1,13 @@
 package ru.soknight.lib.command.enhanced;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-
-import ru.soknight.lib.argument.CommandArguments;
+import ru.soknight.lib.argument.*;
+import ru.soknight.lib.argument.suggestion.SuggestionResolver;
 import ru.soknight.lib.command.response.CommandResponseType;
 import ru.soknight.lib.configuration.Messages;
+
+import java.util.*;
 
 /**
  * The enhanced configurable command executor
@@ -17,11 +15,14 @@ import ru.soknight.lib.configuration.Messages;
 public abstract class EnhancedExecutor extends ExecutionHelper {
 
 	private final Messages messages;
+	private final ParameterRegistry parameterRegistry;
 	private final Map<CommandResponseType, String> responses;
 	
 	private String permission = null;
 	private int requiredArgsCount = 0;
 	private boolean playerOnly = false;
+	private boolean suggestParameters = true;
+	private boolean duplicateSuggestions = false;
 	
 	/**
 	 * The new enhanced executor instance
@@ -29,7 +30,26 @@ public abstract class EnhancedExecutor extends ExecutionHelper {
 	 */
 	public EnhancedExecutor(Messages messages) {
 		this.messages = messages;
+		this.parameterRegistry = new BaseParameterRegistry();
 		this.responses = new HashMap<>();
+	}
+
+	/**
+	 * Get the registry of parameters for this command executor
+	 * @return The parameters registry for this executor
+	 */
+	protected ParameterRegistry parameterRegistry() {
+		return parameterRegistry;
+	}
+
+	/**
+	 * Default method to handle the {@link ru.soknight.lib.exception.ParameterValueRequiredException}
+	 * <p>Default message section is <b>error.parameter-value-required</b> with placeholder <b>%parameter%</b>
+	 * @param sender command sender who used this command
+	 * @param parameter wrong used parameter
+	 */
+	protected void onParameterValueUnspecified(CommandSender sender, String parameter) {
+		messages.sendFormatted(sender, "error.parameter-value-required", "%parameter%", parameter);
 	}
 	
 	/**
@@ -72,15 +92,23 @@ public abstract class EnhancedExecutor extends ExecutionHelper {
 	 * @return The list of tab-completions as a {@link List} of strings
 	 */
 	public List<String> validateAndTabComplete(CommandSender sender, CommandArguments args) {
-		// Checks for player-only flag
+		// check for player-only flag
 		if(playerOnly && !isPlayer(sender))
 			return null;
 		
-		// Checks for permission
+		// check for permission
 		if(permission != null && !permission.isEmpty() && !sender.hasPermission(permission))
 			return null;
-		
-		return executeTabCompletion(sender, args);
+
+		List<String> suggestions = executeTabCompletion(sender, args);
+		if(suggestions == null)
+			suggestions = new ArrayList<>();
+
+		// suggest parameters if needed
+		if(suggestParameters && !args.getRaw().isEmpty())
+			SuggestionResolver.resolveSuggestions(suggestions, parameterRegistry, sender, args, duplicateSuggestions);
+
+		return suggestions;
 	}
 	
 	/**
@@ -95,9 +123,8 @@ public abstract class EnhancedExecutor extends ExecutionHelper {
 		
 		String message = responses.get(type);
 		String response = message != null ? message : ChatColor.RED + type.toString().toLowerCase();
-		
-		if(response != null)
-			sender.sendMessage(response);
+
+		sender.sendMessage(response);
 	}
 	
 	/**
@@ -106,7 +133,6 @@ public abstract class EnhancedExecutor extends ExecutionHelper {
 	 * <u>This method must be overrided</u> by your executor class
 	 * @param sender The command sender
 	 * @param args The specified command arguments
-	 * @return The list of tab-completions as a {@link List} of strings
 	 */
 	protected abstract void executeCommand(CommandSender sender, CommandArguments args);
 	
@@ -149,12 +175,27 @@ public abstract class EnhancedExecutor extends ExecutionHelper {
 	 * <p>
 	 * If specified {@link Messages} configuration in the
 	 * @param type The type of command response
-	 * @param message The new response message for this type
+	 * @param messageKey The key of a new response message for this type
 	 * 
 	 * @see EnhancedExecutor#getResponseMessage(CommandResponseType)
 	 */
 	public void setResponseMessageByKey(CommandResponseType type, String messageKey) {
 		responses.put(type, messages != null ? messages.get(messageKey) : null);
+	}
+
+	/**
+	 * Sets the response message by key from messages configuration which was be set for this response type
+	 * <p>
+	 * If specified {@link Messages} configuration in the
+	 * @param type The type of command response
+	 * @param messageKey The key of a new response message for this type
+	 * @param replacements The array of message replacements
+	 *
+	 * @see EnhancedExecutor#getResponseMessage(CommandResponseType)
+	 * @since 1.12.0
+	 */
+	public void setResponseMessageByKey(CommandResponseType type, String messageKey, Object... replacements) {
+		responses.put(type, messages != null ? messages.getFormatted(messageKey, replacements) : null);
 	}
 	
 	/**
@@ -194,6 +235,15 @@ public abstract class EnhancedExecutor extends ExecutionHelper {
 	public boolean isPlayerOnly() {
 		return playerOnly;
 	}
+
+	/**
+	 * Check is the parameters will be suggested in the tab completion or not
+	 * @return 'true' if will be or 'false' overwise
+	 * @since 1.12.0
+	 */
+	public boolean doSuggestParameters() {
+		return suggestParameters;
+	}
 	
 	/**
 	 * Sets the command permission which is required for successfully command execution
@@ -224,5 +274,27 @@ public abstract class EnhancedExecutor extends ExecutionHelper {
 	public void setPlayerOnly(boolean playerOnly) {
 		this.playerOnly = playerOnly;
 	}
-	
+
+	/**
+	 * Configure the parameter suggestions for the tab completer
+	 * <p>
+	 * <b>Default: true</b>
+	 * @param suggestParameters should plugin to suggest parameter names in the tab
+	 * @since 1.12.0
+	 */
+	public void setSuggestParameters(boolean suggestParameters) {
+		this.suggestParameters = suggestParameters;
+	}
+
+	/**
+	 * Configure the parameter suggestions duplication for the tab completer
+	 * <p>
+	 * <b>Default: false</b>
+	 * @param duplicateSuggestions allow plugin to duplicate parameters suggestions in the tab
+	 * @since 1.12.0
+	 */
+	public void setDuplicateSuggestions(boolean duplicateSuggestions) {
+		this.duplicateSuggestions = duplicateSuggestions;
+	}
+
 }

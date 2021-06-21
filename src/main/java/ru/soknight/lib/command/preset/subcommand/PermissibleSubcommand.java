@@ -15,10 +15,7 @@ public abstract class PermissibleSubcommand extends EnhancedExecutor {
 		super(messages);
 		
 		super.setPermission(permission);
-		
-		String noperms = messages.get("error.no-permissions");
-		
-		super.setResponseMessage(CommandResponseType.NO_PERMISSIONS, noperms);
+		super.setResponseMessageByKey(CommandResponseType.NO_PERMISSIONS, "error.no-permissions");
 	}
 	
 }

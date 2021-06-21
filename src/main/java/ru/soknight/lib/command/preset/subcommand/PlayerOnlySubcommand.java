@@ -14,10 +14,7 @@ public abstract class PlayerOnlySubcommand extends PermissibleSubcommand {
 		super(permission, messages);
 		
 		super.setPlayerOnly(true);
-		
-		String playeronly = messages.get("error.only-for-players");
-		
-		super.setResponseMessage(CommandResponseType.ONLY_FOR_PLAYERS, playeronly);
+		super.setResponseMessageByKey(CommandResponseType.ONLY_FOR_PLAYERS, "error.only-for-players");
 	}
 
 }

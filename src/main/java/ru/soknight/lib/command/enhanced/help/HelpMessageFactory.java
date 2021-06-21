@@ -13,6 +13,7 @@ import ru.soknight.lib.configuration.Messages;
 public class HelpMessageFactory {
 
 	private final Messages messages;
+	private final HelpMessageCompleter messageCompleter;
 	private final List<HelpLine> lines;
 	
 	private String argumentPathFormat;
@@ -24,8 +25,9 @@ public class HelpMessageFactory {
 	 * Creates the new factory instance
 	 * @param messages The messages instance to getOrDefault some messages
 	 */
-	public HelpMessageFactory(Messages messages) {
+	public HelpMessageFactory(Messages messages, HelpMessageCompleter messageCompleter) {
 		this.messages = messages;
+		this.messageCompleter = messageCompleter;
 		this.lines = new ArrayList<>();
 	}
 	
@@ -67,6 +69,15 @@ public class HelpMessageFactory {
 	 */
 	public List<HelpLine> getMessageContent() {
 		return lines;
+	}
+
+	/**
+	 * Complete the help message. After that any message edits will be unavailable!
+	 * @return The current factory instance with last changes
+	 */
+	public HelpMessageFactory complete() {
+		this.messageCompleter.completeMessage();
+		return this;
 	}
 	
 	/**
