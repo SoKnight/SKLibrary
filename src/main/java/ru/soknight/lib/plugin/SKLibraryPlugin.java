@@ -10,7 +10,7 @@ import java.io.PrintStream;
 import java.lang.reflect.Field;
 
 public class SKLibraryPlugin extends JavaPlugin {
-	
+
 	@Override
 	public void onEnable() {
 		// Allowing only ORMLite errors logging
@@ -21,7 +21,7 @@ public class SKLibraryPlugin extends JavaPlugin {
 		Configuration config = new Configuration(this, "config.yml");
 		if(!config.getBoolean("enabled"))
 			return;
-		
+
 		Messages messages = new Messages(this, "messages.yml");
 		new CommandInfo(this, messages);
 	}

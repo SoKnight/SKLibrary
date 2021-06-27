@@ -1,5 +1,5 @@
 # SKLibrary
-Just useful library for some my plugins and for you if you need :)
+Just useful library for my plugins and for you if you need :)
 
 ## Installing plugin
 You must install `SKLibrary plugin` on your server to use this library in your plugin.
@@ -41,7 +41,7 @@ Add SKLibrary dependency:
         <dependency>
             <groupId>com.github.SoKnight</groupId>
             <artifactId>SKLibrary</artifactId>
-            <version>1.12.0</version>
+            <version>1.13.0</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

@@ -2,10 +2,10 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ru.soknight</groupId>
     <artifactId>sklibrary</artifactId>
-    <version>1.12.0</version>
+    <version>1.13.0</version>
     
     <name>SKLibrary</name>
-    <description>Library for SoKnight's plugins</description>
+    <description>The library for SoKnight's plugins</description>
     
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -17,6 +17,10 @@
         <ormlite.version>5.4</ormlite.version>
         <jsoup.version>1.13.1</jsoup.version>
         <jetbrains.annotations.version>13.0</jetbrains.annotations.version>
+
+        <compiler.maven.plugin.version>3.8.1</compiler.maven.plugin.version>
+        <source.maven.plugin.version>3.2.0</source.maven.plugin.version>
+        <shade.maven.plugin.version>3.2.1</shade.maven.plugin.version>
     </properties>
     
     <repositories>
@@ -74,11 +78,24 @@
             </resource>
         </resources>
         <plugins>
+            <!-- Compiler plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${compiler.maven.plugin.version}</version>
+                <configuration>
+                    <compilerArgs>
+                        <arg>-Xlint:deprecation</arg>
+                        <arg>-Xlint:unchecked</arg>
+                    </compilerArgs>
+                </configuration>
+            </plugin>
+
             <!-- Source plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <version>3.2.0</version>
+                <version>${source.maven.plugin.version}</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
@@ -88,13 +105,49 @@
                     </execution>
                 </executions>
             </plugin>
+
             <!-- Shade plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.1</version>
+                <version>${shade.maven.plugin.version}</version>
                 <configuration>
                     <createDependencyReducedPom>false</createDependencyReducedPom>
+                    <shadedArtifactAttached>true</shadedArtifactAttached>
+<!--                    <filters>-->
+<!--                        <filter>-->
+<!--                            <artifact>*:*</artifact>-->
+<!--                            <excludes>-->
+<!--                                <exclude>module-info.class</exclude>-->
+<!--                                <exclude>META-INF/LICENSE</exclude>-->
+<!--                                <exclude>META-INF/LICENSE.txt</exclude>-->
+<!--                                <exclude>META-INF/NOTICE</exclude>-->
+<!--                                <exclude>META-INF/NOTICE.txt</exclude>-->
+<!--                                <exclude>META-INF/*.MF</exclude>-->
+<!--                                <exclude>META-INF/*.SF</exclude>-->
+<!--                                <exclude>META-INF/*.DSA</exclude>-->
+<!--                                <exclude>META-INF/*.RSA</exclude>-->
+<!--                            </excludes>-->
+<!--                        </filter>-->
+<!--                    </filters>-->
+                    <relocations>
+                        <relocation>
+                            <pattern>com.j256.ormlite</pattern>
+                            <shadedPattern>ru.soknight.lib.external.ormlite</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>org.intellij.lang.annotations</pattern>
+                            <shadedPattern>ru.soknight.lib.external.jetbrains.annotations</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>org.jetbrains.annotations</pattern>
+                            <shadedPattern>ru.soknight.lib.external.jetbrains.annotations</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>org.jsoup</pattern>
+                            <shadedPattern>ru.soknight.lib.external.jsoup</shadedPattern>
+                        </relocation>
+                    </relocations>
                 </configuration>
                 <executions>
                     <execution>
