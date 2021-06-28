@@ -63,8 +63,9 @@ public class Database {
         this.bootstrapConnection = establishConnection();
     }
 
-    public void complete() {
+    public Database complete() {
         bootstrapConnection.closeQuietly();
+        return this;
     }
 
     public ConnectionSource establishConnection() throws SQLException {
