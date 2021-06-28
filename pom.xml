@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ru.soknight</groupId>
     <artifactId>sklibrary</artifactId>
-    <version>1.13.1</version>
+    <version>1.13.2</version>
     
     <name>SKLibrary</name>
     <description>The library for SoKnight's plugins</description>
@@ -14,7 +14,7 @@
 
         <spigot.api.version>1.17-R0.1-SNAPSHOT</spigot.api.version>
         <lombok.version>1.18.20</lombok.version>
-        <ormlite.version>5.4</ormlite.version>
+        <ormlite.version>5.6</ormlite.version>
         <jsoup.version>1.13.1</jsoup.version>
         <jetbrains.annotations.version>13.0</jetbrains.annotations.version>
 
@@ -114,27 +114,7 @@
                 <configuration>
                     <createDependencyReducedPom>false</createDependencyReducedPom>
                     <shadedArtifactAttached>true</shadedArtifactAttached>
-<!--                    <filters>-->
-<!--                        <filter>-->
-<!--                            <artifact>*:*</artifact>-->
-<!--                            <excludes>-->
-<!--                                <exclude>module-info.class</exclude>-->
-<!--                                <exclude>META-INF/LICENSE</exclude>-->
-<!--                                <exclude>META-INF/LICENSE.txt</exclude>-->
-<!--                                <exclude>META-INF/NOTICE</exclude>-->
-<!--                                <exclude>META-INF/NOTICE.txt</exclude>-->
-<!--                                <exclude>META-INF/*.MF</exclude>-->
-<!--                                <exclude>META-INF/*.SF</exclude>-->
-<!--                                <exclude>META-INF/*.DSA</exclude>-->
-<!--                                <exclude>META-INF/*.RSA</exclude>-->
-<!--                            </excludes>-->
-<!--                        </filter>-->
-<!--                    </filters>-->
                     <relocations>
-                        <relocation>
-                            <pattern>com.j256.ormlite</pattern>
-                            <shadedPattern>ru.soknight.lib.external.ormlite</shadedPattern>
-                        </relocation>
                         <relocation>
                             <pattern>org.intellij.lang.annotations</pattern>
                             <shadedPattern>ru.soknight.lib.external.jetbrains.annotations</shadedPattern>
@@ -142,10 +122,6 @@
                         <relocation>
                             <pattern>org.jetbrains.annotations</pattern>
                             <shadedPattern>ru.soknight.lib.external.jetbrains.annotations</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>org.jsoup</pattern>
-                            <shadedPattern>ru.soknight.lib.external.jsoup</shadedPattern>
                         </relocation>
                     </relocations>
                 </configuration>
