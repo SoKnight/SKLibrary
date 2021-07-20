@@ -2,22 +2,25 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ru.soknight</groupId>
     <artifactId>sklibrary</artifactId>
-    <version>1.13.2</version>
+    <version>1.13.3</version>
     
     <name>SKLibrary</name>
     <description>The library for SoKnight's plugins</description>
     
     <properties>
+        <!-- Building -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
 
+        <!-- Dependencies -->
         <spigot.api.version>1.17-R0.1-SNAPSHOT</spigot.api.version>
-        <lombok.version>1.18.20</lombok.version>
         <ormlite.version>5.6</ormlite.version>
-        <jsoup.version>1.13.1</jsoup.version>
-        <jetbrains.annotations.version>13.0</jetbrains.annotations.version>
+        <jsoup.version>1.14.1</jsoup.version>
+        <jetbrains.annotations.version>21.0.1</jetbrains.annotations.version>
+        <lombok.version>1.18.20</lombok.version>
 
+        <!-- Maven plugins -->
         <compiler.maven.plugin.version>3.8.1</compiler.maven.plugin.version>
         <source.maven.plugin.version>3.2.0</source.maven.plugin.version>
         <shade.maven.plugin.version>3.2.1</shade.maven.plugin.version>
@@ -34,39 +37,38 @@
         <!-- Spigot API -->
         <dependency>
            <groupId>org.spigotmc</groupId>
-           <artifactId>spigot-api</artifactId>
+           <artifactId>spigot</artifactId>
            <version>${spigot.api.version}</version>
            <scope>provided</scope>
         </dependency>
-        <!-- Lombok -->
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>${lombok.version}</version>
-            <scope>provided</scope>
-        </dependency>
+
         <!-- ORMLite -->
         <dependency>
             <groupId>com.j256.ormlite</groupId>
             <artifactId>ormlite-jdbc</artifactId>
             <version>${ormlite.version}</version>
         </dependency>
-        <dependency>
-            <groupId>com.j256.ormlite</groupId>
-            <artifactId>ormlite-core</artifactId>
-            <version>${ormlite.version}</version>
-        </dependency>
+
         <!-- JSoup -->
         <dependency>
             <groupId>org.jsoup</groupId>
             <artifactId>jsoup</artifactId>
             <version>${jsoup.version}</version>
         </dependency>
+
         <!-- JetBrains Annotations -->
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
             <version>${jetbrains.annotations.version}</version>
+        </dependency>
+
+        <!-- Lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
     
