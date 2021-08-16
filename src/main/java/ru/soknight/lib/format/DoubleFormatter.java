@@ -1,33 +1,33 @@
 package ru.soknight.lib.format;
 
 /**
- * The shortener for float numbers to specified count of numbers after floating point
+ * The shortener for double numbers to specified count of numbers after floating point
  */
-public class FloatFormatter {
+public class DoubleFormatter {
 
 	private final char floatingPointSymbol;
-	
+
 	/**
-	 * The shortener for float numbers with default floating point symbol ','
+	 * The shortener for double numbers with default floating point symbol ','
 	 */
-	public FloatFormatter() {
+	public DoubleFormatter() {
 		this.floatingPointSymbol = ',';
 	}
-	
+
 	/**
-	 * The shortener for float numbers with custom floating point symbol in output strings
+	 * The shortener for double numbers with custom floating point symbol in output strings
 	 * @param floatingPointSymbol The custom floating point symbol
 	 */
-	public FloatFormatter(char floatingPointSymbol) {
+	public DoubleFormatter(char floatingPointSymbol) {
 		this.floatingPointSymbol = floatingPointSymbol;
 	}
 	
 	/**
-	 * @param source Original float number for shorting
+	 * @param source Original double number for shorting
 	 * @param numbersAfterFloatingPointCount Count of numbers after a floating point (more than 1)
-	 * @return The shorted float number as new string
+	 * @return The shorted double number as new string
 	 */
-	public String shortToString(float source, int numbersAfterFloatingPointCount) {
+	public String shortToString(double source, int numbersAfterFloatingPointCount) {
 		if(numbersAfterFloatingPointCount < 1)
 			numbersAfterFloatingPointCount = 1;
 		

@@ -238,7 +238,8 @@ public abstract class AbstractConfiguration {
 	 * @return received float or null if section not contains float value
 	 */
 	public float getFloat(String section) {
-		return (float) fileConfig.getDouble(section);
+		Object object = fileConfig.get(section);
+		return object instanceof Number ? ((Number) object).floatValue() : 0.0F;
 	}
 	
 	/**
@@ -248,7 +249,8 @@ public abstract class AbstractConfiguration {
 	 * @return received float or 'def' value if section not contains float value
 	 */
 	public float getFloat(String section, float def) {
-		return (float) fileConfig.getDouble(section, def);
+		Object object = fileConfig.get(section, def);
+		return object instanceof Number ? ((Number) object).floatValue() : 0.0F;
 	}
 	
 	/**
@@ -297,21 +299,23 @@ public abstract class AbstractConfiguration {
 	 * @param source - string, colored by '&#'
 	 * @return new colored string instance
 	 */
-	public String colorize(String source) {
+	public static String colorize(String source) {
 	    return ChatColor.translateAlternateColorCodes('&', source);
 	}
 	
 	/**
 	 * Formatting your custom message
 	 * @param message - the message to format
-	 * @param replacements - array of string with this syntax: placeholder value placeholder value...
+	 * @param replacements - array of string with this syntax: 'placeholder' 'value' 'placeholder' 'value'...
 	 * @return formatted string with replaced placeholders
 	 */
 	public String format(String message, Object... replacements) {
-		if(replacements == null) return message;
+		if(replacements == null)
+			return message;
 		
 		int length = replacements.length;
-		if(length == 0) return message;
+		if(length == 0)
+			return message;
 		
 		for(int i = 0; i < length; i += 2) {
 			if(i == length - 1) continue;
@@ -332,7 +336,8 @@ public abstract class AbstractConfiguration {
 	 * @return formatted strings list with replaced placeholders
 	 */
 	public List<String> formatList(List<String> list, Object... replacements) {
-		if(list == null || replacements == null || list.isEmpty()) return list;
+		if(list == null || replacements == null || list.isEmpty())
+			return list;
 		
 		return list.stream()
 				.map(s -> format(s, replacements))

@@ -20,6 +20,12 @@ public class DateFormatter {
 
 	private String separator;
 	private final Map<TimeUnit, String> customFormats;
+
+	static {
+		DEFAULT_ENGLISH = new DateFormatter();
+		DEFAULT_RUSSIAN = new DateFormatter();
+		DEFAULT_RUSSIAN.loadRussianTimeUnitFormats();
+	}
 	
 	/**
 	 * Date formatter with default separator (a one space) for multiple {@link TimeUnit time units}
@@ -155,12 +161,6 @@ public class DateFormatter {
 	        }
 	    }
 
-	}
-
-	static {
-		DEFAULT_ENGLISH = new DateFormatter();
-		DEFAULT_RUSSIAN = new DateFormatter();
-		DEFAULT_RUSSIAN.loadRussianTimeUnitFormats();
 	}
 	
 }
