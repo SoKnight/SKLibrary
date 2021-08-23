@@ -19,6 +19,7 @@ public abstract class AbstractQuietExecutor {
     @Deprecated
     protected AbstractQuietExecutor(@NotNull ThrowableHandler throwableHandler) {
         this.throwableHandler = throwableHandler;
+        useCachedThreadPoolAsyncExecutor();
     }
 
     protected AbstractQuietExecutor useThrowableHandler(@NotNull ThrowableHandler throwableHandler) {
