@@ -91,16 +91,21 @@ public abstract class AbstractConfiguration {
 		Logger logger = plugin.getLogger();
 		
 		if(datafolder == null) {
-			logger.severe("SKLib received null data folder, check this plugin.");
+			logger.severe("SKLibrary received a null data folder, check this plugin.");
 			return;
 		}
-		
+
 		if(!datafolder.isDirectory()) {
 			datafolder.mkdirs();
-			if(verbose) logger.info("Created new data folder.");
+			if(verbose)
+				logger.info("Created new data folder.");
 		}
 		
 		File file = new File(datafolder, filename);
+		File parentDirectory = file.getParentFile();
+		if(!parentDirectory.exists() || !parentDirectory.isDirectory())
+			parentDirectory.mkdirs();
+
 		if(!file.exists()) {
 			try {
 				if(source == null) {
@@ -110,11 +115,21 @@ public abstract class AbstractConfiguration {
 				}
 				
 				if(verbose)
-					logger.info("Created new file '" + filename + "'.");
-			} catch (IOException e) {
-				logger.severe("Failed create file '" + filename + "' in " + datafolder.getPath() + "':" + e.getMessage());
+					logger.info(String.format(
+							"Created new file '%s'.%n",
+							filename
+					));
+			} catch (IOException ex) {
+				logger.severe(String.format(
+						"Failed create file '%s' in '%s': %s%n",
+						filename,
+						parentDirectory.getPath(),
+						ex.getMessage()
+				));
+
 				if(verbose)
-					e.printStackTrace();
+					ex.printStackTrace();
+
 				return;
 			}
 		}
@@ -129,7 +144,7 @@ public abstract class AbstractConfiguration {
 	/**
 	 * Getting child section from file
 	 * @param section - target section
-	 * @return child section if getting of it is possible (may be null)
+	 * @return child section if getting of it is possible (maybe null)
 	 */
 	public ConfigurationSection getSection(String section) {
 		return fileConfig.getConfigurationSection(section);
