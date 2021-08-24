@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ru.soknight</groupId>
     <artifactId>sklibrary</artifactId>
-    <version>1.13.7</version>
+    <version>1.13.8</version>
     
     <name>SKLibrary</name>
     <description>The library for SoKnight's plugins</description>
@@ -14,7 +14,7 @@
         <maven.compiler.target>8</maven.compiler.target>
 
         <!-- Dependencies -->
-        <spigot.api.version>1.17-R0.1-SNAPSHOT</spigot.api.version>
+        <spigot.api.version>1.17.1-R0.1-SNAPSHOT</spigot.api.version>
         <ormlite.version>5.6</ormlite.version>
         <jsoup.version>1.14.1</jsoup.version>
         <jetbrains.annotations.version>21.0.1</jetbrains.annotations.version>

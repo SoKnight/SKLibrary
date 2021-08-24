@@ -14,15 +14,15 @@ but compiling process for Windows is similar.
 You must have installed `Maven 3` and `JDK 8` (or above, but it isn't been tested).
 
 ### Compiling
-1) Download sources using `git clone https://github.com/SoKnight/SKLibrary.git sklib`
-2) Go to repository output folder using `cd sklib`
-3) Compile JAR from sources using `mvn install`
+1) Download sources using `git clone https://github.com/SoKnight/SKLibrary.git sklibrary`
+2) Go to repository output folder using `cd sklibrary`
+3) Compile JAR from sources using `mvn compile package`
 4) Go to maven output folder using `cd target`
-5) See the compiled `sklibrary-X.X.X.jar` :)
+5) See the compiled `sklibrary-X.X.X-shaded.jar` :)
 
 ## Development
 To use my library in your project you need add Jitpack repository and the library as project dependency. 
-See instruction for Maven below. I don't use Gradle so I can't post instructions for it here.
+See instruction for Maven below. I don't use Gradle, so I can't post instructions for it here.
 
 ### Maven project
 Add Maven repository:
@@ -41,7 +41,7 @@ Add SKLibrary dependency:
         <dependency>
             <groupId>com.github.SoKnight</groupId>
             <artifactId>SKLibrary</artifactId>
-            <version>1.13.7</version>
+            <version>1.13.8</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
