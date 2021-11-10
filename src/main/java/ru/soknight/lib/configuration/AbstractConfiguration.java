@@ -1,172 +1,223 @@
 package ru.soknight.lib.configuration;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import ru.soknight.lib.tool.Validate;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
- * Abstract configuration instance which contains basic methods for working with configuration file
+ * Abstract configuration instance which contains basic methods for working with an YAML configuration.
  */
-@Getter @Setter
-@NoArgsConstructor
 public abstract class AbstractConfiguration {
 
-	private JavaPlugin plugin;
-	private InputStream source;
-	private String filename;
-	private File datafolder;
-	
-	@Getter
-	private FileConfiguration fileConfig;
-	
+	protected final @NotNull JavaPlugin plugin;
+	protected final @NotNull String fileName;
+	protected final @NotNull Path dataFolderPath;
+	protected final @Nullable InputStream resource;
+
+	protected FileConfiguration configuration;
+
 	/**
-	 * Configuration file object with methods, implemented from FileConfiguration
-	 * @param plugin - owner plugin for configuration file
-	 * @param filename - name of destination file and internal (in-jar) resource
+	 * Create a new abstract configuration instance using default data folder path and configuration resource.
+	 * @param plugin The plugin that will use this configuration.
+	 * @param fileName The configuration file name.
 	 */
-	public AbstractConfiguration(JavaPlugin plugin, String filename) {
+	public AbstractConfiguration(
+			@NotNull JavaPlugin plugin,
+			@NotNull String fileName
+	) {
+		this(plugin, fileName, plugin.getResource(fileName));
+	}
+
+	/**
+	 * Create a new abstract configuration instance using default data folder path.
+	 * @param plugin The plugin that will use this configuration.
+	 * @param fileName The configuration file name.
+	 * @param resource The configuration resource in the plugin JAR.
+	 */
+	public AbstractConfiguration(
+			@NotNull JavaPlugin plugin,
+			@NotNull String fileName,
+			@NotNull InputStream resource
+	) {
+		this(plugin, fileName, plugin.getDataFolder().toPath(), resource);
+	}
+
+	/**
+	 * Create a new abstract configuration instance using all custom values.
+	 * @param plugin The plugin that will use this configuration.
+	 * @param fileName The configuration file name.
+	 * @param dataFolderPath The path to data folder.
+	 * @param resource The configuration resource in the plugin JAR.
+	 */
+	public AbstractConfiguration(
+			@NotNull JavaPlugin plugin,
+			@NotNull String fileName,
+			@NotNull Path dataFolderPath,
+			@NotNull InputStream resource
+	) {
+		Validate.notNull(plugin, "plugin");
+		Validate.notNull(fileName, "fileName");
+		Validate.notNull(dataFolderPath, "dataFolderPath");
+		Validate.notNull(resource, "resource");
+
 		this.plugin = plugin;
-		this.filename = filename;
-		this.source = plugin.getResource(this.filename);
-		this.datafolder = plugin.getDataFolder();
+		this.fileName = fileName;
+		this.dataFolderPath = dataFolderPath;
+		this.resource = resource;
+
 		refresh();
 	}
-	
+
 	/**
-	 * Configuration file object with methods, implemented from FileConfiguration
-	 * @param plugin - owner plugin for configuration file
-	 * @param source - input stream of custom specified internal resource
-	 * @param filename - name of destination file
+	 * Get the Bukkit configuration wrapped by this instance. <br>
+	 * You can use that to invoke other methods that aren't implemented here.
+	 * @return A raw Bukkit configuration instance.
 	 */
-	public AbstractConfiguration(JavaPlugin plugin, InputStream source, String filename) {
-		this.plugin = plugin;
-		this.filename = filename;
-		this.source = source;
-		this.datafolder = plugin.getDataFolder();
-		refresh();
+	public @NotNull Configuration getBukkitConfig() {
+		return configuration;
 	}
-	
+
 	/**
-	 * Configuration file object with methods, implemented from FileConfiguration
-	 * @param plugin - owner plugin for configuration file
-	 * @param dataFolder - custom data folder for configuration file
-	 * @param source - input stream of custom specified internal resource
-	 * @param filename - name of destination file
+	 * Get the instance of plugin that uses this configuration.
+	 * @return The plugin instance.
 	 */
-	public AbstractConfiguration(JavaPlugin plugin, File dataFolder, InputStream source, String filename) {
-		this.plugin = plugin;
-		this.filename = filename;
-		this.source = source;
-		this.datafolder = dataFolder;
-		refresh();
+	public @NotNull JavaPlugin getPlugin() {
+		return plugin;
 	}
-	
+
 	/**
-	 * Refreshing file and file configuration
-	 * Specify 'refresh(true)' to enable additional info output
+	 * Get the configuration file name.
+	 * @return The configuration file name.
+	 */
+	public @NotNull String getFileName() {
+		return fileName;
+	}
+
+	/**
+	 * Get the data folder path where an exported configuration file located.
+	 * @return The path to data folder.
+	 */
+	public @NotNull Path getDataFolderPath() {
+		return dataFolderPath;
+	}
+
+	/**
+	 * Get the configuration file resource used to export that to the plugin data folder.
+	 * @return The configuration file resource inside the plugin JAR.
+	 */
+	public @NotNull Optional<InputStream> getResource() {
+		return Optional.ofNullable(resource);
+	}
+
+	/**
+	 * Refresh the configuration file and update the cached configuration structure from that. <br>
+	 * You can enable debug logging using similar method with a boolean parameter.
+	 * @see #refresh(boolean)
 	 */
 	public void refresh() {
 		refresh(false);
 	}
 	
 	/**
-	 * Refreshing file and file configuration
-	 * @param verbose - should this method send info messages using plugin's logger
+	 * Refresh the configuration file and update the cached configuration structure from that.
+	 * @param verbose The debug logging boolean flag.
 	 */
 	public void refresh(boolean verbose) {
 		Logger logger = plugin.getLogger();
 		
-		if(datafolder == null) {
-			logger.severe("SKLibrary received a null data folder, check this plugin.");
+		if(dataFolderPath == null) {
+			logger.severe("SKLibrary detected a nulled dataFolderPath field value, check this plugin.");
 			return;
 		}
 
-		if(!datafolder.isDirectory()) {
-			datafolder.mkdirs();
-			if(verbose)
-				logger.info("Created new data folder.");
-		}
-		
-		File file = new File(datafolder, filename);
-		File parentDirectory = file.getParentFile();
-		if(!parentDirectory.exists() || !parentDirectory.isDirectory())
-			parentDirectory.mkdirs();
-
-		if(!file.exists()) {
+		if(!Files.isDirectory(dataFolderPath)) {
 			try {
-				if(source == null) {
-					file.createNewFile();
-				} else {
-					Files.copy(source, file.toPath());
-				}
-				
-				if(verbose)
-					logger.info(String.format(
-							"Created new file '%s'.%n",
-							filename
-					));
+				Files.createDirectories(dataFolderPath);
+				sendDebugMessage(verbose, "Created a new data folder in: %s", dataFolderPath.toAbsolutePath());
 			} catch (IOException ex) {
-				logger.severe(String.format(
-						"Failed create file '%s' in '%s': %s%n",
-						filename,
-						parentDirectory.getPath(),
-						ex.getMessage()
-				));
+				sendErrorMessage(verbose, "Couldn't create a data folder in '%s'!", ex, dataFolderPath.toAbsolutePath());
+			}
+		}
 
-				if(verbose)
-					ex.printStackTrace();
+		Path filePath = dataFolderPath.resolve(fileName.replace('/', File.separatorChar));
+		Path parentDirectory = filePath.getParent();
 
-				return;
+		if(!Files.isDirectory(parentDirectory)) {
+			try {
+				Files.createDirectories(parentDirectory);
+				sendDebugMessage(verbose, "Created an output file parent directory in: %s", parentDirectory.toAbsolutePath());
+			} catch (IOException ex) {
+				sendErrorMessage(verbose, "Couldn't create an output file parent directory in '%s'!", ex, parentDirectory.toAbsolutePath());
+			}
+		}
+
+		if(!Files.isRegularFile(filePath)) {
+			try {
+				if(resource == null) {
+					Files.createFile(filePath);
+					sendDebugMessage(verbose, "Created an empty configuration file in: %s", filePath.toAbsolutePath());
+				} else {
+					Files.copy(resource, filePath, StandardCopyOption.REPLACE_EXISTING);
+					sendDebugMessage(verbose, "Copied a configuration file from internal resource to: %s", filePath.toAbsolutePath());
+				}
+			} catch (IOException ex) {
+				sendErrorMessage(verbose, "Couldn't create a configuration file in '%s'!", ex, filePath.toAbsolutePath());
 			}
 		}
 		
-		this.fileConfig = YamlConfiguration.loadConfiguration(file);
+		this.configuration = YamlConfiguration.loadConfiguration(filePath.toFile());
 	}
-	
-	/*
-	 * Methods from FileConfiguration
-	 */
+
+	/********************************
+	 * 								*
+	 *    PROXIED BUKKIT METHODS    *
+	 *								*
+	 *******************************/
 	
 	/**
-	 * Getting child section from file
-	 * @param section - target section
-	 * @return child section if getting of it is possible (maybe null)
+	 * Get the child configuration section by specified path.
+	 * @param path The configuration section path.
+	 * @return The found configuration section in this path (nullable).
 	 */
-	public ConfigurationSection getSection(String section) {
-		return fileConfig.getConfigurationSection(section);
+	public @Nullable ConfigurationSection getSection(@NotNull String path) {
+		return configuration.getConfigurationSection(path);
 	}
-	
+
 	/**
-	 * Getting string from file
-	 * @param section - section with target string value in file
-	 * @return received string or null if section not contains string value
+	 * Get the property value as string by specified path.
+	 * @param path The property path.
+	 * @return The string value of found configuration property (nullable).
 	 */
-	public String getString(String section) {
-		return fileConfig.getString(section);
+	public @Nullable String getString(@NotNull String path) {
+		return configuration.getString(path);
 	}
-	
+
 	/**
-	 * Getting string from file
-	 * @param section - section with target string value in file
-	 * @param def - default output value if section not contains string value
-	 * @return received string or 'def' value if section not contains string value
+	 * Get the property value as string by specified path or return default value on fail.
+	 * @param path The property path.
+	 * @param def The default value to return on fail.
+	 * @return The string value of found configuration property or the default value (nullable).
 	 */
-	public String getString(String section, String def) {
-		return fileConfig.getString(section, def);
+	public @Nullable String getString(@NotNull String path, @Nullable String def) {
+		return configuration.getString(path, def);
 	}
 	
 	/**
@@ -175,7 +226,7 @@ public abstract class AbstractConfiguration {
 	 * @return received string or null if section not contains string value
 	 */
 	public String getColoredString(String section) {
-		String string = fileConfig.getString(section);
+		String string = configuration.getString(section);
 		return string == null ? null : colorize(string);
 	}
 	
@@ -186,7 +237,7 @@ public abstract class AbstractConfiguration {
 	 * @return received string or 'def' value if section not contains string value
 	 */
 	public String getColoredString(String section, String def) {
-		String string = fileConfig.getString(section, def);
+		String string = configuration.getString(section, def);
 		return string == null ? null : colorize(string);
 	}
 	
@@ -196,7 +247,7 @@ public abstract class AbstractConfiguration {
 	 * @return received integer or null if section not contains integer value
 	 */
 	public int getInt(String section) {
-		return fileConfig.getInt(section);
+		return configuration.getInt(section);
 	}
 	
 	/**
@@ -206,7 +257,7 @@ public abstract class AbstractConfiguration {
 	 * @return received integer or 'def' value if section not contains integer value
 	 */
 	public int getInt(String section, int def) {
-		return fileConfig.getInt(section, def);
+		return configuration.getInt(section, def);
 	}
 	
 	/**
@@ -215,7 +266,7 @@ public abstract class AbstractConfiguration {
      * @return received long or null if section not contains long value
      */
     public long getLong(String section) {
-        return fileConfig.getLong(section);
+        return configuration.getLong(section);
     }
     
     /**
@@ -225,7 +276,7 @@ public abstract class AbstractConfiguration {
      * @return received long or 'def' value if section not contains long value
      */
     public long getLong(String section, long def) {
-        return fileConfig.getLong(section, def);
+        return configuration.getLong(section, def);
     }
 	
 	/**
@@ -234,7 +285,7 @@ public abstract class AbstractConfiguration {
 	 * @return received double or null if section not contains double value
 	 */
 	public double getDouble(String section) {
-		return fileConfig.getDouble(section);
+		return configuration.getDouble(section);
 	}
 	
 	/**
@@ -244,7 +295,7 @@ public abstract class AbstractConfiguration {
 	 * @return received double or 'def' value if section not contains double value
 	 */
 	public double getDouble(String section, double def) {
-		return fileConfig.getDouble(section, def);
+		return configuration.getDouble(section, def);
 	}
 	
 	/**
@@ -253,7 +304,7 @@ public abstract class AbstractConfiguration {
 	 * @return received float or null if section not contains float value
 	 */
 	public float getFloat(String section) {
-		Object object = fileConfig.get(section);
+		Object object = configuration.get(section);
 		return object instanceof Number ? ((Number) object).floatValue() : 0.0F;
 	}
 	
@@ -264,7 +315,7 @@ public abstract class AbstractConfiguration {
 	 * @return received float or 'def' value if section not contains float value
 	 */
 	public float getFloat(String section, float def) {
-		Object object = fileConfig.get(section, def);
+		Object object = configuration.get(section, def);
 		return object instanceof Number ? ((Number) object).floatValue() : 0.0F;
 	}
 	
@@ -274,7 +325,7 @@ public abstract class AbstractConfiguration {
 	 * @return received boolean or null if section not contains boolean value
 	 */
 	public Boolean getBoolean(String section) {
-		return fileConfig.getBoolean(section);
+		return configuration.getBoolean(section);
 	}
 	
 	/**
@@ -284,7 +335,7 @@ public abstract class AbstractConfiguration {
 	 * @return received boolean or 'def' value if section not contains boolean value
 	 */
 	public boolean getBoolean(String section, boolean def) {
-		return fileConfig.getBoolean(section, def);
+		return configuration.getBoolean(section, def);
 	}
 	
 	/**
@@ -293,7 +344,7 @@ public abstract class AbstractConfiguration {
 	 * @return received strings list or null if section not contains strings list
 	 */
 	public List<String> getList(String section) {
-		return fileConfig.getStringList(section);
+		return configuration.getStringList(section);
 	}
 	
 	/**
@@ -302,7 +353,7 @@ public abstract class AbstractConfiguration {
 	 * @return received strings list or null if section not contains strings list
 	 */
 	public List<String> getColoredList(String section) {
-		List<String> list = fileConfig.getStringList(section);
+		List<String> list = configuration.getStringList(section);
 
 		List<String> colored = new ArrayList<>();
 		list.forEach(s -> colored.add(colorize(s)));
@@ -325,7 +376,7 @@ public abstract class AbstractConfiguration {
 	 * @return formatted string with replaced placeholders
 	 */
 	public String format(String message, Object... replacements) {
-		if(replacements == null)
+		if(message == null || replacements == null)
 			return message;
 		
 		int length = replacements.length;
@@ -357,6 +408,77 @@ public abstract class AbstractConfiguration {
 		return list.stream()
 				.map(s -> format(s, replacements))
 				.collect(Collectors.toList());
+	}
+
+	// --- logging
+	protected void sendDebugMessage(boolean debugEnabled, @NotNull String message, Object... args) {
+		if(debugEnabled)
+			plugin.getLogger().info(String.format(message, args));
+	}
+
+	protected void sendErrorMessage(@NotNull String message, Object... args) {
+		plugin.getLogger().severe(String.format(message, args));
+	}
+
+	protected void sendErrorMessage(boolean debugEnabled, @NotNull String message, @NotNull Throwable exception, Object... args) {
+		sendErrorMessage(message, args);
+		sendErrorMessage("Reason: %s", exception.getMessage());
+		if(debugEnabled)
+			exception.printStackTrace();
+	}
+
+	/********************************
+	 * 								*
+	 *    BACKWARD COMPATIBILITY    *
+	 * 								*
+	 *******************************/
+
+	/**
+	 * @deprecated Use {@link #AbstractConfiguration(JavaPlugin, String, InputStream)} instead.
+	 */
+	@Deprecated
+	public AbstractConfiguration(JavaPlugin plugin, InputStream resource, String fileName) {
+		this(plugin, fileName, resource);
+	}
+
+	/**
+	 * @deprecated Use {@link #AbstractConfiguration(JavaPlugin, String, Path, InputStream)} instead.
+	 */
+	@Deprecated
+	public AbstractConfiguration(JavaPlugin plugin, File dataFolder, InputStream resource, String fileName) {
+		this(plugin, fileName, dataFolder.toPath(), resource);
+	}
+
+	/**
+	 * @deprecated Use {@link #getBukkitConfig()} instead.
+	 */
+	@Deprecated
+	public @NotNull FileConfiguration getFileConfig() {
+		return configuration;
+	}
+
+	/**
+	 * @deprecated Use {@link #getFileName()} instead.
+	 */
+	@Deprecated
+	public @NotNull String getFilename() {
+		return fileName;
+	}
+
+	/**
+	 * @deprecated Use {@link #getDataFolderPath()} instead.
+	 */
+	@Deprecated
+	public @NotNull File getDatafolder() {
+		return dataFolderPath.toFile();
+	}
+
+	/**
+	 * @deprecated Use {@link #getResource()} instead.
+	 */
+	@Deprecated
+	public @Nullable InputStream getSource() {
+		return resource;
 	}
 	
 }

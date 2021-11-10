@@ -1,56 +1,86 @@
 package ru.soknight.lib.configuration;
 
-import java.io.File;
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.List;
-
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.HoverEvent;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
-
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-import ru.soknight.lib.component.TextFormatter;
+import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.Configuration;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import ru.soknight.lib.component.replacement.Replacements;
 import ru.soknight.lib.component.replacement.TextComponentReplacement;
+
+import java.io.File;
+import java.io.InputStream;
+import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Configuration of messages file which contains methods for working with plugin messages
  */
 public class Messages extends AbstractConfiguration {
-	
+
 	/**
-	 * Messages file object with methods from Configuration and messages formatter
-	 * @param plugin Owner plugin for configuration file
-	 * @param filename Name of destination file and internal (in-jar) resource
+	 * Create a new messages instance using default data folder path and configuration resource.
+	 * @param plugin The plugin that will use this configuration.
+	 * @param fileName The configuration file name.
 	 */
-	public Messages(JavaPlugin plugin, String filename) {
-		super(plugin, filename);
+	public Messages(
+			@NotNull JavaPlugin plugin,
+			@NotNull String fileName
+	) {
+		super(plugin, fileName);
 	}
-	
+
 	/**
-	 * Messages file object with methods from Configuration and messages formatter
-	 * @param plugin Owner plugin for configuration file
-	 * @param source {@link InputStream} of custom specified internal resource
-	 * @param filename Name of destination file
+	 * Create a new messages instance using default data folder path.
+	 * @param plugin The plugin that will use this configuration.
+	 * @param fileName The configuration file name.
+	 * @param resource The configuration resource in the plugin JAR.
 	 */
-	public Messages(JavaPlugin plugin, InputStream source, String filename) {
-		super(plugin, source, filename);
+	public Messages(
+			@NotNull JavaPlugin plugin,
+			@NotNull String fileName,
+			@NotNull InputStream resource
+	) {
+		super(plugin, fileName, resource);
 	}
-	
+
 	/**
-	 * Messages file object with methods from Configuration and messages formatter
-	 * @param plugin Owner plugin for configuration file
-	 * @param dataFolder Custom data folder for configuration file
-	 * @param source {@link InputStream} of custom specified internal resource
-	 * @param filename Name of destination file
+	 * Create a new messages instance using all custom values.
+	 * @param plugin The plugin that will use this configuration.
+	 * @param fileName The configuration file name.
+	 * @param dataFolderPath The path to data folder.
+	 * @param resource The configuration resource in the plugin JAR.
 	 */
-	public Messages(JavaPlugin plugin, File dataFolder, InputStream source, String filename) {
-		super(plugin, dataFolder, source, filename);
+	public Messages(
+			@NotNull JavaPlugin plugin,
+			@NotNull String fileName,
+			@NotNull Path dataFolderPath,
+			@NotNull InputStream resource
+	) {
+		super(plugin, fileName, dataFolderPath, resource);
+	}
+
+	/**
+	 * @deprecated Use {@link #Messages(JavaPlugin, String, InputStream)} instead.
+	 */
+	@Deprecated
+	public Messages(JavaPlugin plugin, InputStream resource, String fileName) {
+		this(plugin, fileName, resource);
+	}
+
+	/**
+	 * @deprecated Use {@link #Messages(JavaPlugin, String, Path, InputStream)} instead.
+	 */
+	@Deprecated
+	public Messages(JavaPlugin plugin, File dataFolder, InputStream resource, String fileName) {
+		this(plugin, fileName, dataFolder.toPath(), resource);
 	}
 	
 	/**
@@ -65,7 +95,7 @@ public class Messages extends AbstractConfiguration {
 	/**
 	 * Getting colored message from file
 	 * @param section Section with target message in file
-	 * @param def Default value to return if specified section will not found in the file
+	 * @param def Default value to return if specified section will not be found in the file
 	 * @return Formatted string with replaced placeholders or message about not exist message
 	 */
 	public String getOrDefault(String section, String def) {
@@ -84,7 +114,7 @@ public class Messages extends AbstractConfiguration {
 	/**
 	 * Getting colored message component from file
 	 * @param section Section with target message component in file
-	 * @param def Default value to return if specified section will not found in the file
+	 * @param def Default value to return if specified section will not be found in the file
 	 * @return Formatted component with replaced placeholders or message about not exist message
 	 */
 	public TextComponent getComponent(String section, String def) {
@@ -92,9 +122,27 @@ public class Messages extends AbstractConfiguration {
 	}
 
 	/**
+	 * Get the title configuration by specified path.
+	 * @param path The path to title configuration.
+	 * @return A parsed title configuration (nullable).
+	 */
+	public @Nullable Title getTitle(@NotNull String path) {
+		if(!isTitle(path))
+			return null;
+
+		String title = getColoredString(path + ".title");
+		String subtitle = getColoredString(path + ".subtitle");
+		int fadeInTicks = getInt(path + ".fade-in", 0);
+		int stayTicks = getInt(path + ".stay", 0);
+		int fadeOutTicks = getInt(path + ".fade-out", 0);
+
+		return new Title(title, subtitle, fadeInTicks, stayTicks, fadeOutTicks);
+	}
+
+	/**
 	 * Formatting exist message from configuration by section key
 	 * @param section Section with target message in file
-	 * @param replacements Array of string with this syntax: placeholder value placeholder value...
+	 * @param replacements Array of string with this syntax: placeholder, value, placeholder, value...
 	 * @return Formatted string with replaced placeholders or message about not exist message
 	 */
 	public String getFormatted(String section, Object... replacements) {
@@ -104,8 +152,8 @@ public class Messages extends AbstractConfiguration {
 	/**
 	 * Formatting exist message from configuration by section key
 	 * @param section Section with target message in file
-	 * @param def Default value to return if specified section will not found in the file
-	 * @param replacements Array of string with this syntax: placeholder value placeholder value...
+	 * @param def Default value to return if specified section will not be found in the file
+	 * @param replacements Array of string with this syntax: placeholder, value, placeholder, value...
 	 * @return Formatted string with replaced placeholders or message about not exist message
 	 */
 	public String getFormattedOrDefault(String section, String def, Object... replacements) {
@@ -123,6 +171,25 @@ public class Messages extends AbstractConfiguration {
         String message = getFormatted(section, replacements);
         return new TextComponent(message);
     }
+
+	/**
+	 * Get the title configuration by specified path with formatted texts.
+	 * @param path The path to title configuration.
+	 * @param replacements The replacements array with syntax: 'placeholder1, value1, placeholder2, value2'...
+	 * @return A parsed title configuration (nullable).
+	 */
+	public @Nullable Title getTitleFormatted(@NotNull String path, Object... replacements) {
+		if(!isTitle(path))
+			return null;
+
+		String title = format(getColoredString(path + ".title"), replacements);
+		String subtitle = format(getColoredString(path + ".subtitle"), replacements);
+		int fadeInTicks = getInt(path + ".fade-in", 0);
+		int stayTicks = getInt(path + ".stay", 0);
+		int fadeOutTicks = getInt(path + ".fade-out", 0);
+
+		return new Title(title, subtitle, fadeInTicks, stayTicks, fadeOutTicks);
+	}
 
 	/**
 	 * Parsing a section in specified path as TextComponent button with 'text', 'hover' and 'command' params
@@ -270,7 +337,14 @@ public class Messages extends AbstractConfiguration {
 	 * @param section Section with message which will be sent
 	 */
 	public void getAndSend(CommandSender sender, String section) {
-		if(sender == null || section == null) return;
+		if(sender == null || section == null)
+			return;
+
+		if(isTitle(section)) {
+			Title title = getTitle(section);
+			title.send(sender);
+			return;
+		}
 		
 		boolean toActionBar = sender instanceof Player && isActionbar(section);
 		send(sender, get(section), toActionBar);
@@ -280,13 +354,18 @@ public class Messages extends AbstractConfiguration {
 	 * Getting and formatting message and sending it to sender
 	 * @param sender Message receiver
 	 * @param section Section with message which will be sent
-	 * @param replacements Array of string with this syntax: placeholder value placeholder value...
+	 * @param replacements Array of string with this syntax: placeholder, value, placeholder, value...
 	 */
 	public void sendFormatted(CommandSender sender, String section, Object... replacements) {
 		if(sender == null || section == null) return;
+
+		if(isTitle(section)) {
+			Title title = getTitleFormatted(section, replacements);
+			title.send(sender);
+			return;
+		}
 		
 		boolean toActionbar = sender instanceof Player && isActionbar(section);
-		
 		if(replacements == null || replacements.length == 0)
 			send(sender, get(section), toActionbar);
 		else
@@ -303,7 +382,6 @@ public class Messages extends AbstractConfiguration {
         if(sender == null || section == null) return;
         
         boolean toActionbar = sender instanceof Player && isActionbar(section);
-        
         if(replacements == null || replacements.length == 0)
             send(sender, getComponent(section), toActionbar);
         else
@@ -325,16 +403,29 @@ public class Messages extends AbstractConfiguration {
 			return true;
 		
 		// Check parent sections
-		for(String a : actionBarPreferred) {
-			if(a.equals(" ") || !a.endsWith(".*"))
+		for(String key : actionBarPreferred) {
+			if(!key.endsWith(".*"))
 				continue;
 			
 			// If specified parent section then return true
-			if(section.startsWith(a.substring(0, a.length() - 1)))
+			if(section.startsWith(key.substring(0, key.length() - 1)))
 				return true;
 		}
 			
 		return false;
+	}
+
+	/**
+	 * Check is a message exists in this path, and it's a title message.
+	 * @param path A full path to message in configuration.
+	 * @return A boolean value: 'true' if it's a title or 'false' overwise.
+	 */
+	public boolean isTitle(@NotNull String path) {
+		Configuration config = getBukkitConfig();
+		if(!config.isConfigurationSection(path))
+			return false;
+
+		return config.isSet("title") || config.isSet("subtitle");
 	}
 	
 }

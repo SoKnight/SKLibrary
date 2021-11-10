@@ -1,46 +1,73 @@
 package ru.soknight.lib.configuration;
 
+import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
+
 import java.io.File;
 import java.io.InputStream;
-
-import org.bukkit.plugin.java.JavaPlugin;
-
-import lombok.NoArgsConstructor;
+import java.nio.file.Path;
 
 /**
  * Configuration for working with configuration files
  */
-@NoArgsConstructor
 public class Configuration extends AbstractConfiguration {
-	
+
 	/**
-	 * Configuration file object with methods, implemented from FileConfiguration
-	 * @param plugin - owner plugin for configuration file
-	 * @param filename - name of destination file and internal (in-jar) resource
+	 * Create a new messages instance using default data folder path and configuration resource.
+	 * @param plugin The plugin that will use this configuration.
+	 * @param fileName The configuration file name.
 	 */
-	public Configuration(JavaPlugin plugin, String filename) {
-		super(plugin, filename);
+	public Configuration(
+			@NotNull JavaPlugin plugin,
+			@NotNull String fileName
+	) {
+		super(plugin, fileName);
 	}
-	
+
 	/**
-	 * Configuration file object with methods, implemented from FileConfiguration
-	 * @param plugin - owner plugin for configuration file
-	 * @param source - input stream of custom specified internal resource
-	 * @param filename - name of destination file
+	 * Create a new messages instance using default data folder path.
+	 * @param plugin The plugin that will use this configuration.
+	 * @param fileName The configuration file name.
+	 * @param resource The configuration resource in the plugin JAR.
 	 */
-	public Configuration(JavaPlugin plugin, InputStream source, String filename) {
-		super(plugin, source, filename);
+	public Configuration(
+			@NotNull JavaPlugin plugin,
+			@NotNull String fileName,
+			@NotNull InputStream resource
+	) {
+		super(plugin, fileName, resource);
 	}
-	
+
 	/**
-	 * Configuration file object with methods, implemented from FileConfiguration
-	 * @param plugin - owner plugin for configuration file
-	 * @param datafolder - custom data folder for configuration file
-	 * @param source - input stream of custom specified internal resource
-	 * @param filename - name of destination file
+	 * Create a new messages instance using all custom values.
+	 * @param plugin The plugin that will use this configuration.
+	 * @param fileName The configuration file name.
+	 * @param dataFolderPath The path to data folder.
+	 * @param resource The configuration resource in the plugin JAR.
 	 */
-	public Configuration(JavaPlugin plugin, File datafolder, InputStream source, String filename) {
-		super(plugin, datafolder, source, filename);
+	public Configuration(
+			@NotNull JavaPlugin plugin,
+			@NotNull String fileName,
+			@NotNull Path dataFolderPath,
+			@NotNull InputStream resource
+	) {
+		super(plugin, fileName, dataFolderPath, resource);
+	}
+
+	/**
+	 * @deprecated Use {@link #Configuration(JavaPlugin, String, InputStream)} instead.
+	 */
+	@Deprecated
+	public Configuration(JavaPlugin plugin, InputStream resource, String fileName) {
+		this(plugin, fileName, resource);
+	}
+
+	/**
+	 * @deprecated Use {@link #Configuration(JavaPlugin, String, Path, InputStream)} instead.
+	 */
+	@Deprecated
+	public Configuration(JavaPlugin plugin, File dataFolder, InputStream resource, String fileName) {
+		this(plugin, fileName, dataFolder.toPath(), resource);
 	}
 	
 }
