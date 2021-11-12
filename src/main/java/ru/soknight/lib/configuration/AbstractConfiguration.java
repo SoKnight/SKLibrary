@@ -226,7 +226,7 @@ public abstract class AbstractConfiguration {
 	 * @return received string or null if section not contains string value
 	 */
 	public String getColoredString(String section) {
-		String string = configuration.getString(section);
+		String string = configuration.isString(section) ? configuration.getString(section) : null;
 		return string == null ? null : colorize(string);
 	}
 	
