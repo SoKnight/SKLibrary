@@ -425,7 +425,7 @@ public class Messages extends AbstractConfiguration {
 		if(!config.isConfigurationSection(path))
 			return false;
 
-		return config.isSet("title") || config.isSet("subtitle");
+		return config.isSet(path + ".title") || config.isSet(path + ".subtitle");
 	}
 	
 }
