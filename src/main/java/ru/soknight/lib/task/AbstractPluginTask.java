@@ -40,6 +40,11 @@ public abstract class AbstractPluginTask implements PluginTask {
     }
 
     @Override
+    public void run() {
+        start();
+    }
+
+    @Override
     public @NotNull Plugin getPlugin() {
         return plugin;
     }
