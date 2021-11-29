@@ -74,7 +74,10 @@ public abstract class StandaloneExecutor extends EnhancedExecutor implements Mer
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
 		try {
-			return validateAndTabComplete(sender, new BaseCommandArguments(sender, args, parameterRegistry()));
+			CommandArguments arguments = new BaseCommandArguments(sender, args, parameterRegistry());
+			arguments.getDispatchPath().appendCommand(getCommand());
+
+			return validateAndTabComplete(sender, arguments);
 		} catch (ParameterValueRequiredException ignored) {
 			return null;
 		}
@@ -83,7 +86,10 @@ public abstract class StandaloneExecutor extends EnhancedExecutor implements Mer
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		try {
-			validateAndExecute(sender, new BaseCommandArguments(sender, args, parameterRegistry()));
+			CommandArguments arguments = new BaseCommandArguments(sender, args, parameterRegistry());
+			arguments.getDispatchPath().appendCommand(getCommand());
+
+			validateAndExecute(sender, arguments);
 			return true;
 		} catch (ParameterValueRequiredException ex) {
 			onParameterValueUnspecified(sender, ex.getParameter());

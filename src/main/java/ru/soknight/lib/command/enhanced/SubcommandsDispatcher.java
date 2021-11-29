@@ -44,9 +44,8 @@ public abstract class SubcommandsDispatcher extends StandaloneExecutor {
 	 * @param executor The new subcommand executor
 	 */
 	public void setExecutor(String subcommand, EnhancedExecutor executor) {
-		if(subcommand == null || executor == null || subcommand.isEmpty()) return;
-		
-		executors.put(subcommand.toLowerCase(), executor);
+		if(subcommand != null && executor != null && subcommand.isEmpty())
+			executors.put(subcommand.toLowerCase(), executor);
 	}
 
 	@Override
@@ -63,6 +62,7 @@ public abstract class SubcommandsDispatcher extends StandaloneExecutor {
 		}
 		
 		EnhancedExecutor executor = executors.get(subcommand);
+		args.getDispatchPath().appendCommand(subcommand);
 		args.remove(0);
 		
 		executor.validateAndExecute(sender, args);
@@ -81,10 +81,12 @@ public abstract class SubcommandsDispatcher extends StandaloneExecutor {
 					.collect(Collectors.toList());
 		}
 
-		String subcommand = args.remove(0).toLowerCase();
-		return executors.containsKey(subcommand)
-				? executors.get(subcommand).validateAndTabComplete(sender, args)
-				: null;
+		String subcommand = args.remove(0);
+		if(!executors.containsKey(subcommand.toLowerCase()))
+			return null;
+
+		args.getDispatchPath().appendCommand(subcommand);
+		return executors.get(subcommand).validateAndTabComplete(sender, args);
 	}
 
 }

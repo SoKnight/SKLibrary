@@ -15,6 +15,7 @@ public final class BaseCommandArguments implements CommandArguments {
 
     private final List<String> arguments;
     private final List<String> rawArguments;
+    private final DispatchPath dispatchPath;
     private final ParameterRegistry parameterRegistry;
 
     private final Map<String, ParameterValue> foundParameters;
@@ -25,6 +26,7 @@ public final class BaseCommandArguments implements CommandArguments {
     {
         this.arguments = new ArrayList<>();
         this.rawArguments = new ArrayList<>();
+        this.dispatchPath = new BaseDispatchPath();
         this.parameterRegistry = parameterRegistry;
 
         this.foundParameters = new HashMap<>();
@@ -125,6 +127,11 @@ public final class BaseCommandArguments implements CommandArguments {
     @Override
     public List<String> getRaw() {
         return Collections.unmodifiableList(rawArguments);
+    }
+
+    @Override
+    public @NotNull DispatchPath getDispatchPath() {
+        return dispatchPath;
     }
 
     @Override

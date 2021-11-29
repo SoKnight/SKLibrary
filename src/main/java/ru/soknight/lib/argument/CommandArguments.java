@@ -1,5 +1,7 @@
 package ru.soknight.lib.argument;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -20,6 +22,8 @@ public interface CommandArguments extends Parameterized {
 	 * @return the list of raw arguments
 	 */
 	List<String> getRaw();
+
+	@NotNull DispatchPath getDispatchPath();
 
 	/**
 	 * Returns the number of arguments

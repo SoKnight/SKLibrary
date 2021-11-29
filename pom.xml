@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ru.soknight</groupId>
     <artifactId>sklibrary</artifactId>
-    <version>1.14.2</version>
+    <version>1.14.3</version>
     
     <name>SKLibrary</name>
     <description>The library for SoKnight's plugins</description>
@@ -73,6 +73,7 @@
     </dependencies>
     
     <build>
+        <finalName>${project.name}-${project.version}</finalName>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
@@ -115,7 +116,7 @@
                 <version>${shade.maven.plugin.version}</version>
                 <configuration>
                     <createDependencyReducedPom>false</createDependencyReducedPom>
-                    <shadedArtifactAttached>true</shadedArtifactAttached>
+                    <shadedArtifactAttached>false</shadedArtifactAttached>
                     <relocations>
                         <relocation>
                             <pattern>org.intellij.lang.annotations</pattern>
