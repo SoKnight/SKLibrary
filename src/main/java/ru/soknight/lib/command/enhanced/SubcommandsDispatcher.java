@@ -1,9 +1,12 @@
 package ru.soknight.lib.command.enhanced;
 
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import ru.soknight.lib.argument.CommandArguments;
 import ru.soknight.lib.command.response.CommandResponseType;
 import ru.soknight.lib.configuration.Messages;
+import ru.soknight.lib.tool.Validate;
 
 import java.util.HashMap;
 import java.util.List;
@@ -32,7 +35,7 @@ public abstract class SubcommandsDispatcher extends StandaloneExecutor {
 	 * @param command The command name
 	 * @param messages The messages configuration for some default command response messages
 	 */
-	public SubcommandsDispatcher(String command, Messages messages) {
+	public SubcommandsDispatcher(@NotNull String command, @NotNull Messages messages) {
 		super(command, messages);
 	}
 	
@@ -43,25 +46,26 @@ public abstract class SubcommandsDispatcher extends StandaloneExecutor {
 	 * @param subcommand The subcommand, okay?
 	 * @param executor The new subcommand executor
 	 */
-	public void setExecutor(String subcommand, EnhancedExecutor executor) {
-		if(subcommand != null && executor != null && subcommand.isEmpty())
-			executors.put(subcommand.toLowerCase(), executor);
+	public void setExecutor(@NotNull String subcommand, @NotNull EnhancedExecutor executor) {
+		Validate.notEmpty(subcommand, "subcommand");
+		Validate.notNull(executor, "executor");
+		executors.put(subcommand.toLowerCase(), executor);
 	}
 
 	@Override
-	protected void executeCommand(CommandSender sender, CommandArguments args) {
+	protected void executeCommand(@NotNull CommandSender sender, @NotNull CommandArguments args) {
 		if(args.isEmpty()) {
 			sendResponseMessage(sender, CommandResponseType.NO_ARGS);
 			return;
 		}
 		
-		String subcommand = args.get(0).toLowerCase();
-		if(!executors.containsKey(subcommand)) {
+		String subcommand = args.remove(0);
+		if(!executors.containsKey(subcommand.toLowerCase())) {
 			sendResponseMessage(sender, CommandResponseType.UNKNOWN_SUBCOMMAND);
 			return;
 		}
 		
-		EnhancedExecutor executor = executors.get(subcommand);
+		EnhancedExecutor executor = executors.get(subcommand.toLowerCase());
 		args.getDispatchPath().appendCommand(subcommand);
 		args.remove(0);
 		
@@ -69,8 +73,9 @@ public abstract class SubcommandsDispatcher extends StandaloneExecutor {
 	}
 	
 	@Override
-	protected List<String> executeTabCompletion(CommandSender sender, CommandArguments args) {
-		if(args.isEmpty() || executors.isEmpty()) return null;
+	protected @Nullable List<String> executeTabCompletion(@NotNull CommandSender sender, @NotNull CommandArguments args) {
+		if(args.isEmpty() || executors.isEmpty())
+			return null;
 		
 		if(args.size() == 1 && !args.anyParametersFound()) {
 			String arg = getLastArgument(args, true);

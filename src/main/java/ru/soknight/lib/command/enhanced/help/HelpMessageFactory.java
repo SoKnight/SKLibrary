@@ -1,11 +1,16 @@
 package ru.soknight.lib.command.enhanced.help;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnmodifiableView;
 import ru.soknight.lib.command.enhanced.help.line.HelpLine;
 import ru.soknight.lib.command.enhanced.help.line.HelpLineBuilder;
 import ru.soknight.lib.configuration.Messages;
+import ru.soknight.lib.tool.Validate;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * The reloaded factory to create the help message easy
@@ -25,7 +30,10 @@ public class HelpMessageFactory {
 	 * Creates the new factory instance
 	 * @param messages The messages instance to getOrDefault some messages
 	 */
-	public HelpMessageFactory(Messages messages, HelpMessageCompleter messageCompleter) {
+	public HelpMessageFactory(@NotNull Messages messages, @NotNull HelpMessageCompleter messageCompleter) {
+		Validate.notNull(messages, "messages");
+		Validate.notNull(messageCompleter, "messageCompleter");
+
 		this.messages = messages;
 		this.messageCompleter = messageCompleter;
 		this.lines = new ArrayList<>();
@@ -36,7 +44,8 @@ public class HelpMessageFactory {
 	 * @param line The completed help line
 	 * @return The current factory instance with last changes
 	 */
-	public HelpMessageFactory addLine(HelpLine line) {
+	public @NotNull HelpMessageFactory addLine(@NotNull HelpLine line) {
+		Validate.notNull(line, "line");
 		lines.add(line);
 		return this;
 	}
@@ -45,7 +54,7 @@ public class HelpMessageFactory {
 	 * Creates the new line builder and returns it
 	 * @return The builder of new help line
 	 */
-	public HelpLineBuilder newLine() {
+	public @NotNull HelpLineBuilder newLine() {
 		HelpLineBuilder builder = new HelpLineBuilder(messages, this);
 		
 		if(argumentPathFormat != null)
@@ -67,15 +76,15 @@ public class HelpMessageFactory {
 	 * Gets the help message content as a list of {@link HelpLine}s
 	 * @return The help message content
 	 */
-	public List<HelpLine> getMessageContent() {
-		return lines;
+	public @NotNull @UnmodifiableView List<HelpLine> getMessageContent() {
+		return Collections.unmodifiableList(lines);
 	}
 
 	/**
 	 * Complete the help message. After that any message edits will be unavailable!
 	 * @return The current factory instance with last changes
 	 */
-	public HelpMessageFactory complete() {
+	public @NotNull HelpMessageFactory complete() {
 		this.messageCompleter.completeMessage();
 		return this;
 	}
@@ -90,7 +99,7 @@ public class HelpMessageFactory {
 	 * @param argumentPathFormat The format of argument path
 	 * @return The current factory instance with last changes
 	 */
-	public HelpMessageFactory argumentPathFormat(String argumentPathFormat) {
+	public @NotNull HelpMessageFactory argumentPathFormat(@Nullable String argumentPathFormat) {
 		this.argumentPathFormat = argumentPathFormat;
 		return this;
 	}
@@ -105,7 +114,7 @@ public class HelpMessageFactory {
 	 * @param descriptionPathFormat The format of description path
 	 * @return The current factory instance with last changes
 	 */
-	public HelpMessageFactory descriptionPathFormat(String descriptionPathFormat) {
+	public @NotNull HelpMessageFactory descriptionPathFormat(@Nullable String descriptionPathFormat) {
 		this.descriptionPathFormat = descriptionPathFormat;
 		return this;
 	}
@@ -119,7 +128,7 @@ public class HelpMessageFactory {
 	 * @param helpLineFormat The format of displayable help line
 	 * @return The current factory instance with last changes
 	 */
-	public HelpMessageFactory helpLineFormat(String helpLineFormat) {
+	public @NotNull HelpMessageFactory helpLineFormat(@Nullable String helpLineFormat) {
 		this.helpLineFormat = helpLineFormat;
 		return this;
 	}
@@ -133,7 +142,7 @@ public class HelpMessageFactory {
 	 * @return The current factory instance with last changes
 	 * @see HelpMessageFactory#helpLineFormat(String)
 	 */
-	public HelpMessageFactory helpLineFormatFrom(String path) {
+	public @NotNull HelpMessageFactory helpLineFormatFrom(@NotNull String path) {
 		this.helpLineFormat = messages.get(path);
 		return this;
 	}
@@ -149,7 +158,7 @@ public class HelpMessageFactory {
 	 * @param permissionFormat The format of required permission
 	 * @return The current factory instance with last changes
 	 */
-	public HelpMessageFactory permissionFormat(String permissionFormat) {
+	public @NotNull HelpMessageFactory permissionFormat(@Nullable String permissionFormat) {
 		this.permissionFormat = permissionFormat;
 		return this;
 	}

@@ -4,11 +4,14 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import ru.soknight.lib.argument.BaseCommandArguments;
 import ru.soknight.lib.argument.CommandArguments;
 import ru.soknight.lib.command.MergedExecutor;
 import ru.soknight.lib.configuration.Messages;
 import ru.soknight.lib.exception.ParameterValueRequiredException;
+import ru.soknight.lib.tool.Validate;
 
 import java.util.List;
 
@@ -28,9 +31,10 @@ public abstract class StandaloneExecutor extends EnhancedExecutor implements Mer
 	 * @param command The command name
 	 * @param messages The messages configuration for some default command response messages
 	 */
-	public StandaloneExecutor(String command, Messages messages) {
+	public StandaloneExecutor(@NotNull String command, @NotNull Messages messages) {
 		super(messages);
-		
+
+		Validate.notEmpty(command, "command");
 		this.command = command;
 	}
 
@@ -45,7 +49,7 @@ public abstract class StandaloneExecutor extends EnhancedExecutor implements Mer
 	 * <u>plugin hasn't this command</u>, registration of this class will be aborted
 	 * @param plugin The plugin which is owner of command
 	 */
-	public void register(JavaPlugin plugin) {
+	public void register(@NotNull JavaPlugin plugin) {
 		register(plugin, false);
 	}
 	
@@ -57,22 +61,24 @@ public abstract class StandaloneExecutor extends EnhancedExecutor implements Mer
 	 * @param plugin The plugin which is owner of command
 	 * @param registerTabCompleter Should this class will be registered as tab-completer or not
 	 */
-	public void register(JavaPlugin plugin, boolean registerTabCompleter) {
-		if(command == null || command.isEmpty()) return;
-		
+	public void register(@NotNull JavaPlugin plugin, boolean registerTabCompleter) {
+		Validate.notNull(plugin, "plugin");
+
 		PluginCommand command = plugin.getCommand(this.command);
-		if(command == null) return;
-		
-		command.setExecutor(this);
-		if(registerTabCompleter)
-			command.setTabCompleter(this);
+		if(command != null) {
+			command.setExecutor(this);
+
+			if(registerTabCompleter) {
+				command.setTabCompleter(this);
+			}
+		}
 	}
 	
 	@Override
-	protected abstract void executeCommand(CommandSender sender, CommandArguments args);
+	protected abstract void executeCommand(@NotNull CommandSender sender, @NotNull CommandArguments args);
 	
 	@Override
-	public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+	public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
 		try {
 			CommandArguments arguments = new BaseCommandArguments(sender, args, parameterRegistry());
 			arguments.getDispatchPath().appendCommand(getCommand());
@@ -84,7 +90,7 @@ public abstract class StandaloneExecutor extends EnhancedExecutor implements Mer
 	}
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+	public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
 		try {
 			CommandArguments arguments = new BaseCommandArguments(sender, args, parameterRegistry());
 			arguments.getDispatchPath().appendCommand(getCommand());
@@ -101,7 +107,7 @@ public abstract class StandaloneExecutor extends EnhancedExecutor implements Mer
 	 * Gets the command name which was be specified by the constructor
 	 * @return The command name (required value, but may be null)
 	 */
-	public String getCommand() {
+	public @NotNull String getCommand() {
 		return command;
 	}
 	

@@ -1,12 +1,14 @@
 package ru.soknight.lib.command.enhanced.help.command;
 
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
 import ru.soknight.lib.argument.CommandArguments;
 import ru.soknight.lib.command.enhanced.StandaloneExecutor;
 import ru.soknight.lib.command.enhanced.help.HelpMessageFactory;
 import ru.soknight.lib.command.enhanced.help.line.HelpLine;
 import ru.soknight.lib.command.response.CommandResponseType;
 import ru.soknight.lib.configuration.Messages;
+import ru.soknight.lib.tool.Validate;
 
 import java.util.List;
 
@@ -18,18 +20,19 @@ public abstract class StandaloneHelpExecutor extends StandaloneExecutor {
 	private String header, footer;
 	private List<HelpLine> lines;
 	
-	public StandaloneHelpExecutor(String command, Messages messages) {
+	public StandaloneHelpExecutor(@NotNull String command, @NotNull Messages messages) {
 		super(command, messages);
 		
 		this.factory = new HelpMessageFactory(messages, this::completeMessage);
 		this.messages = messages;
 	}
 	
-	protected HelpMessageFactory factory() {
+	protected @NotNull HelpMessageFactory factory() {
 		return factory;
 	}
 
-	protected void requirePermission(String permission) {
+	protected void requirePermission(@NotNull String permission) {
+		Validate.notEmpty(permission, "permission");
 		super.setPermission(permission);
 		super.setResponseMessageByKey(CommandResponseType.NO_PERMISSIONS, "error.no-permissions");
 	}
@@ -38,7 +41,10 @@ public abstract class StandaloneHelpExecutor extends StandaloneExecutor {
 		this.lines = factory.getMessageContent();
 	}
 	
-	protected void sendHelpMessage(CommandSender receiver) {
+	protected void sendHelpMessage(@NotNull CommandSender receiver) {
+		if(receiver == null)
+			return;
+
 		StringBuilder builder = new StringBuilder();
 		
 		if(header != null)
@@ -56,24 +62,24 @@ public abstract class StandaloneHelpExecutor extends StandaloneExecutor {
 		receiver.sendMessage(builder.toString());
 	}
 	
-	protected void setHeader(String header) {
+	protected void setHeader(@NotNull String header) {
 		this.header = header;
 	}
 	
-	protected void setHeaderFrom(String path) {
+	protected void setHeaderFrom(@NotNull String path) {
 		this.header = messages.get(path);
 	}
 	
-	protected void setFooter(String footer) {
+	protected void setFooter(@NotNull String footer) {
 		this.footer = footer;
 	}
 	
-	protected void setFooterFrom(String path) {
+	protected void setFooterFrom(@NotNull String path) {
 		this.footer = messages.get(path);
 	}
 	
 	@Override
-	protected void executeCommand(CommandSender sender, CommandArguments args) {
+	protected void executeCommand(@NotNull CommandSender sender, @NotNull CommandArguments args) {
 		sendHelpMessage(sender);
 	}
 

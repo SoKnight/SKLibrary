@@ -1,10 +1,13 @@
 package ru.soknight.lib.command.enhanced.help.line;
 
-import java.util.Arrays;
-
 import lombok.Setter;
+import org.jetbrains.annotations.NotNull;
 import ru.soknight.lib.command.enhanced.help.HelpMessageFactory;
 import ru.soknight.lib.configuration.Messages;
+import ru.soknight.lib.tool.Validate;
+
+import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * The builder for a help line
@@ -25,7 +28,9 @@ public class HelpLineBuilder {
 	 * @param messages The messages instance for some messages
 	 * @param factory The factory instance for the feedback
 	 */
-	public HelpLineBuilder(Messages messages, HelpMessageFactory factory) {
+	public HelpLineBuilder(@NotNull Messages messages, @NotNull HelpMessageFactory factory) {
+		Validate.notNull(messages, "messages");
+		Validate.notNull(factory, "factory");
 		this.messages = messages;
 		this.factory = factory;
 		this.line = new HelpLine(messages);
@@ -35,7 +40,7 @@ public class HelpLineBuilder {
 	 * Adds this line to help message using factory feedback
 	 * @return The original help message factory
 	 */
-	public HelpMessageFactory add() {
+	public @NotNull HelpMessageFactory add() {
 		factory.addLine(line);
 		return factory;
 	}
@@ -45,7 +50,7 @@ public class HelpLineBuilder {
 	 * @param argument The completed argument
 	 * @return The current builder instance with last changes
 	 */
-	public HelpLineBuilder argument(String argument) {
+	public @NotNull HelpLineBuilder argument(@NotNull String argument) {
 		line.addArgument(argument);
 		return this;
 	}
@@ -55,20 +60,22 @@ public class HelpLineBuilder {
 	 * @param arguments The completed arguments array
 	 * @return The current builder instance with last changes
 	 */
-	public HelpLineBuilder arguments(String... arguments) {
+	public @NotNull HelpLineBuilder arguments(@NotNull String... arguments) {
 		line.addArguments(arguments);
 		return this;
 	}
 	
 	/**
-	 * Adds the argument for command by the messages section
-	 * @param section The messages section with this argument
+	 * Adds the argument for command by the messages path
+	 * @param path The message path with this argument
 	 * @return The current builder instance with last changes
 	 * @see HelpMessageFactory#argumentPathFormat(String)
 	 */
-	public HelpLineBuilder argumentFrom(String section) {
-		String path = String.format(argumentPathFormat, section);
-		String argument = messages.get(path);
+	public @NotNull HelpLineBuilder argumentFrom(@NotNull String path) {
+		Validate.notEmpty(path, "path");
+
+		String fullPath = String.format(argumentPathFormat, path);
+		String argument = messages.get(fullPath);
 		
 		line.addArgument(argument);
 		return this;
@@ -80,16 +87,16 @@ public class HelpLineBuilder {
 	 * @return The current builder instance with last changes
 	 * @see HelpMessageFactory#argumentPathFormat(String)
 	 */
-	public HelpLineBuilder argumentsFrom(String... sections) {
+	public @NotNull HelpLineBuilder argumentsFrom(@NotNull String... sections) {
 		if(sections == null || sections.length == 0)
 			return this;
 		
 		Arrays.stream(sections)
-				.filter(s -> s != null)
+				.filter(Objects::nonNull)
 				.filter(s -> !s.isEmpty())
 				.map(s -> String.format(argumentPathFormat, s))
-				.map(p -> messages.get(p))
-				.forEach(a -> line.addArgument(a));
+				.map(messages::get)
+				.forEach(line::addArgument);
 		
 		return this;
 	}
@@ -99,9 +106,8 @@ public class HelpLineBuilder {
 	 * @param command The help line command
 	 * @return The current builder instance with last changes
 	 */
-	public HelpLineBuilder command(String command) {
-		if(command == null || command.isEmpty())
-			return this;
+	public @NotNull HelpLineBuilder command(@NotNull String command) {
+		Validate.notEmpty(command, "command");
 		
 		line.setCommand(command);
 		
@@ -120,9 +126,8 @@ public class HelpLineBuilder {
 	 * @param isDescriptionFromSection Should to auto-generate description & permission or not
 	 * @return The current builder instance with last changes
 	 */
-	public HelpLineBuilder command(String command, boolean isDescriptionFromSection) {
-		if(command == null || command.isEmpty())
-			return this;
+	public @NotNull HelpLineBuilder command(@NotNull String command, boolean isDescriptionFromSection) {
+		Validate.notEmpty(command, "command");
 		
 		line.setCommand(command);
 		
@@ -148,20 +153,20 @@ public class HelpLineBuilder {
 	 * @param description The help line description
 	 * @return The current builder instance with last changes
 	 */
-	public HelpLineBuilder description(String description) {
+	public @NotNull HelpLineBuilder description(@NotNull String description) {
 		line.setDescription(description);
 		return this;
 	}
 	
 	/**
-	 * Specifies the description for the current help line from the messages section
-	 * @param section The messages section with help line description
+	 * Specifies the description for the current help line from the messages path
+	 * @param path The message path with help line description
 	 * @return The current builder instance with last changes
 	 * @see HelpMessageFactory#descriptionPathFormat(String)
 	 */
-	public HelpLineBuilder descriptionFrom(String section) {
-		String path = String.format(descriptionPathFormat, section);
-		String description = messages.get(path);
+	public @NotNull HelpLineBuilder descriptionFrom(@NotNull String path) {
+		String fullPath = String.format(descriptionPathFormat, path);
+		String description = messages.get(fullPath);
 		
 		line.setDescription(description);
 		return this;
@@ -173,7 +178,7 @@ public class HelpLineBuilder {
 	 * @return The current builder instance with last changes
 	 * @see HelpMessageFactory#helpLineFormat(String)
 	 */
-	public HelpLineBuilder format(String format) {
+	public @NotNull HelpLineBuilder format(@NotNull String format) {
 		line.setFormat(format);
 		return this;
 	}
@@ -184,7 +189,7 @@ public class HelpLineBuilder {
 	 * @return The current builder instance with last changes
 	 * @see HelpMessageFactory#helpLineFormatFrom(String)
 	 */
-	public HelpLineBuilder formatFrom(String path) {
+	public @NotNull HelpLineBuilder formatFrom(@NotNull String path) {
 		String format = messages.get(path);
 		
 		line.setFormat(format);
@@ -197,7 +202,7 @@ public class HelpLineBuilder {
 	 * @return The current builder instance with last changes
 	 * @see HelpMessageFactory#permissionFormat(String)
 	 */
-	public HelpLineBuilder permission(String permission) {
+	public @NotNull HelpLineBuilder permission(@NotNull String permission) {
 		String formatted = permissionFormat != null
 				? String.format(permissionFormat, permission)
 				: permission;

@@ -1,14 +1,17 @@
 package ru.soknight.lib.command.enhanced.help.line;
 
-import java.util.Arrays;
-
+import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-
-import lombok.Data;
+import org.jetbrains.annotations.NotNull;
 import ru.soknight.lib.configuration.Messages;
+import ru.soknight.lib.tool.Validate;
 
-@Data
+import java.util.Arrays;
+import java.util.Objects;
+
+@Getter @Setter
 public class HelpLine {
 
 	private final Messages messages;
@@ -19,23 +22,24 @@ public class HelpLine {
 	private String format;
 	private String permission;
 	
-	public HelpLine(Messages messages) {
+	public HelpLine(@NotNull Messages messages) {
+		Validate.notNull(messages, "messages");
 		this.messages = messages;
 		this.arguments = new StringBuilder();
 		this.format = "%command% - %description%";
 	}
 	
-	public void addArgument(String argument) {
+	public void addArgument(@NotNull String argument) {
 		if(argument != null && !argument.isEmpty())
 			arguments.append(" ").append(argument);
 	}
 	
-	public void addArguments(String... arguments) {
+	public void addArguments(@NotNull String... arguments) {
 		if(arguments != null)
-			Arrays.stream(arguments).forEach(a -> addArgument(a));
+			Arrays.stream(arguments).forEach(this::addArgument);
 	}
 	
-	public String format() {
+	public @NotNull String format() {
 		if(format == null)
 			return ChatColor.RED + "Help line format is null :(";
 		
@@ -48,8 +52,35 @@ public class HelpLine {
 		return messages.format(format, "%command%", command, "%description%", description);
 	}
 	
-	public boolean isAvailableFor(CommandSender sender) {
-		return permission != null && !permission.isEmpty() ? sender.hasPermission(permission) : true;
+	public boolean isAvailableFor(@NotNull CommandSender sender) {
+		return sender != null && (permission == null || permission.isEmpty() || sender.hasPermission(permission));
 	}
-	
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		HelpLine helpLine = (HelpLine) o;
+		return Objects.equals(command, helpLine.command) &&
+				Objects.equals(description, helpLine.description) &&
+				Objects.equals(format, helpLine.format) &&
+				Objects.equals(permission, helpLine.permission);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(command, description, format, permission);
+	}
+
+	@Override
+	public @NotNull String toString() {
+		return "HelpLine{" +
+				"command='" + command + '\'' +
+				", description='" + description + '\'' +
+				", format='" + format + '\'' +
+				", permission='" + permission + '\'' +
+				'}';
+	}
+
 }

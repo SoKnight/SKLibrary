@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ru.soknight</groupId>
     <artifactId>sklibrary</artifactId>
-    <version>1.14.3</version>
+    <version>1.14.4</version>
     
     <name>SKLibrary</name>
     <description>The library for SoKnight's plugins</description>

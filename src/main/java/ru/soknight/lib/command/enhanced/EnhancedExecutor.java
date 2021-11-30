@@ -2,12 +2,20 @@ package ru.soknight.lib.command.enhanced;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import ru.soknight.lib.argument.*;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import ru.soknight.lib.argument.BaseParameterRegistry;
+import ru.soknight.lib.argument.CommandArguments;
+import ru.soknight.lib.argument.ParameterRegistry;
 import ru.soknight.lib.argument.suggestion.SuggestionResolver;
 import ru.soknight.lib.command.response.CommandResponseType;
 import ru.soknight.lib.configuration.Messages;
+import ru.soknight.lib.tool.Validate;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * The enhanced configurable command executor
@@ -28,7 +36,8 @@ public abstract class EnhancedExecutor extends ExecutionHelper {
 	 * The new enhanced executor instance
 	 * @param messages The messages configuration for some default command response messages
 	 */
-	public EnhancedExecutor(Messages messages) {
+	public EnhancedExecutor(@NotNull Messages messages) {
+		Validate.notNull(messages, "messages");
 		this.messages = messages;
 		this.parameterRegistry = new BaseParameterRegistry();
 		this.responses = new HashMap<>();
@@ -38,7 +47,7 @@ public abstract class EnhancedExecutor extends ExecutionHelper {
 	 * Get the registry of parameters for this command executor
 	 * @return The parameters registry for this executor
 	 */
-	protected ParameterRegistry parameterRegistry() {
+	protected @NotNull ParameterRegistry parameterRegistry() {
 		return parameterRegistry;
 	}
 
@@ -48,7 +57,9 @@ public abstract class EnhancedExecutor extends ExecutionHelper {
 	 * @param sender command sender who used this command
 	 * @param parameter wrong used parameter
 	 */
-	protected void onParameterValueUnspecified(CommandSender sender, String parameter) {
+	protected void onParameterValueUnspecified(@NotNull CommandSender sender, @NotNull String parameter) {
+		Validate.notNull(sender, "sender");
+		Validate.notEmpty(parameter, "parameter");
 		messages.sendFormatted(sender, "error.parameter-value-required", "%parameter%", parameter);
 	}
 	
@@ -60,7 +71,10 @@ public abstract class EnhancedExecutor extends ExecutionHelper {
 	 * @param sender The command sender
 	 * @param args The specified command arguments
 	 */
-	public void validateAndExecute(CommandSender sender, CommandArguments args) {
+	public void validateAndExecute(@NotNull CommandSender sender, @NotNull CommandArguments args) {
+		Validate.notNull(sender, "sender");
+		Validate.notNull(args, "args");
+
 		// Checks for player-only flag
 		if(playerOnly && !isPlayer(sender)) {
 			sendResponseMessage(sender, CommandResponseType.ONLY_FOR_PLAYERS);
@@ -91,7 +105,10 @@ public abstract class EnhancedExecutor extends ExecutionHelper {
 	 * @param args The specified command arguments
 	 * @return The list of tab-completions as a {@link List} of strings
 	 */
-	public List<String> validateAndTabComplete(CommandSender sender, CommandArguments args) {
+	public @Nullable List<String> validateAndTabComplete(@NotNull CommandSender sender, @NotNull CommandArguments args) {
+		Validate.notNull(sender, "sender");
+		Validate.notNull(args, "args");
+
 		// check for player-only flag
 		if(playerOnly && !isPlayer(sender))
 			return null;
@@ -118,8 +135,9 @@ public abstract class EnhancedExecutor extends ExecutionHelper {
 	 * @param sender The command sender (receiver for message)
 	 * @param type The type of command response message
 	 */
-	public void sendResponseMessage(CommandSender sender, CommandResponseType type) {
-		if(type == null) return;
+	public void sendResponseMessage(@NotNull CommandSender sender, @NotNull CommandResponseType type) {
+		Validate.notNull(sender, "sender");
+		Validate.notNull(type, "type");
 		
 		String message = responses.get(type);
 		String response = message != null ? message : ChatColor.RED + type.toString().toLowerCase();
@@ -134,7 +152,7 @@ public abstract class EnhancedExecutor extends ExecutionHelper {
 	 * @param sender The command sender
 	 * @param args The specified command arguments
 	 */
-	protected abstract void executeCommand(CommandSender sender, CommandArguments args);
+	protected abstract void executeCommand(@NotNull CommandSender sender, @NotNull CommandArguments args);
 	
 	/**
 	 * Executes the tab-completion for command sender
@@ -144,7 +162,7 @@ public abstract class EnhancedExecutor extends ExecutionHelper {
 	 * @param args The specified command arguments
 	 * @return The list of tab-completions as a {@link List} of strings
 	 */
-	protected List<String> executeTabCompletion(CommandSender sender, CommandArguments args) {
+	protected @Nullable List<String> executeTabCompletion(@NotNull CommandSender sender, @NotNull CommandArguments args) {
 		return null;
 	}
 	
@@ -155,7 +173,7 @@ public abstract class EnhancedExecutor extends ExecutionHelper {
 	 * 
 	 * @see EnhancedExecutor#setResponseMessage(CommandResponseType, String)
 	 */
-	public String getResponseMessage(CommandResponseType type) {
+	public @Nullable String getResponseMessage(@NotNull CommandResponseType type) {
 		return responses.get(type);
 	}
 	
@@ -166,7 +184,8 @@ public abstract class EnhancedExecutor extends ExecutionHelper {
 	 * 
 	 * @see EnhancedExecutor#getResponseMessage(CommandResponseType)
 	 */
-	public void setResponseMessage(CommandResponseType type, String message) {
+	public void setResponseMessage(@NotNull CommandResponseType type, @Nullable String message) {
+		Validate.notNull(type, "type");
 		responses.put(type, message);
 	}
 	
@@ -179,7 +198,9 @@ public abstract class EnhancedExecutor extends ExecutionHelper {
 	 * 
 	 * @see EnhancedExecutor#getResponseMessage(CommandResponseType)
 	 */
-	public void setResponseMessageByKey(CommandResponseType type, String messageKey) {
+	public void setResponseMessageByKey(@NotNull CommandResponseType type, @NotNull String messageKey) {
+		Validate.notNull(type, "type");
+		Validate.notEmpty(messageKey, "messageKey");
 		responses.put(type, messages != null ? messages.get(messageKey) : null);
 	}
 
@@ -194,7 +215,9 @@ public abstract class EnhancedExecutor extends ExecutionHelper {
 	 * @see EnhancedExecutor#getResponseMessage(CommandResponseType)
 	 * @since 1.12.0
 	 */
-	public void setResponseMessageByKey(CommandResponseType type, String messageKey, Object... replacements) {
+	public void setResponseMessageByKey(@NotNull CommandResponseType type, @NotNull String messageKey, Object... replacements) {
+		Validate.notNull(type, "type");
+		Validate.notEmpty(messageKey, "messageKey");
 		responses.put(type, messages != null ? messages.getFormatted(messageKey, replacements) : null);
 	}
 	
@@ -202,7 +225,7 @@ public abstract class EnhancedExecutor extends ExecutionHelper {
 	 * Gets the used {@link Messages} configuration for some command response messages
 	 * @return The used messages configuration (required value, but may be null)
 	 */
-	public Messages getMessages() {
+	public @NotNull Messages getMessages() {
 		return messages;
 	}
 	
@@ -212,7 +235,7 @@ public abstract class EnhancedExecutor extends ExecutionHelper {
 	 * 
 	 * @see EnhancedExecutor#setPermission(String)
 	 */
-	public String getPermission() {
+	public @Nullable String getPermission() {
 		return permission;
 	}
 	
@@ -251,7 +274,7 @@ public abstract class EnhancedExecutor extends ExecutionHelper {
 	 * 
 	 * @see EnhancedExecutor#getPermission()
 	 */
-	public void setPermission(String permission) {
+	public void setPermission(@Nullable String permission) {
 		this.permission = permission;
 	}
 	

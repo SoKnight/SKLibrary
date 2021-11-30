@@ -4,7 +4,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import ru.soknight.lib.argument.CommandArguments;
+import ru.soknight.lib.tool.Validate;
 
 /**
  * The collection of useful methods for a command executors
@@ -20,7 +23,7 @@ public abstract class ExecutionHelper {
 	 * @param args The command arguments object
 	 * @return The last argument if it's possible (may be null)
 	 */
-	public String getLastArgument(CommandArguments args) {
+	public @Nullable String getLastArgument(@NotNull CommandArguments args) {
 		return getLastArgument(args, false);
 	}
 	
@@ -32,8 +35,11 @@ public abstract class ExecutionHelper {
 	 * @param lowerCase Should the argument to be in the lower-case or not
 	 * @return The last argument if it's possible (may be null)
 	 */
-	public String getLastArgument(CommandArguments args, boolean lowerCase) {
-		if(args.isEmpty()) return null;
+	public @Nullable String getLastArgument(@NotNull CommandArguments args, boolean lowerCase) {
+		Validate.notNull(args, "args");
+
+		if(args.isEmpty())
+			return null;
 		
 		String arg = args.get(args.size() - 1);
 		if(lowerCase)
@@ -47,7 +53,7 @@ public abstract class ExecutionHelper {
 	 * @param sender The target command sender
 	 * @return The 'true' value if sender is player or 'false' if not
 	 */
-	public boolean isPlayer(CommandSender sender) {
+	public boolean isPlayer(@Nullable CommandSender sender) {
 		return sender instanceof Player;
 	}
 	
@@ -57,7 +63,7 @@ public abstract class ExecutionHelper {
 	 * @return The 'true' value if offline player is exists or 'false' if not
 	 */
 	@SuppressWarnings("deprecation")
-	public boolean isPlayerExists(String nickname) {
+	public boolean isPlayerExists(@NotNull String nickname) {
 		OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(nickname);
 		return offlinePlayer.isOnline() || offlinePlayer.hasPlayedBefore();
 	}
@@ -67,7 +73,7 @@ public abstract class ExecutionHelper {
 	 * @param nickname The nickname of target player
 	 * @return The 'true' value if player is online or 'false' if not
 	 */
-	public boolean isPlayerOnline(String nickname) {
+	public boolean isPlayerOnline(@NotNull String nickname) {
 		return Bukkit.getPlayer(nickname) != null;
 	}
 	
@@ -76,7 +82,10 @@ public abstract class ExecutionHelper {
 	 * @param source The string to check
 	 * @return The 'true' value if this string is integer of 'false' if not
 	 */
-	public boolean isInteger(String source) {
+	public boolean isInteger(@Nullable String source) {
+		if(source == null || source.isEmpty())
+			return false;
+
 		try {
 			Integer.parseInt(source);
 			return true;
@@ -90,7 +99,10 @@ public abstract class ExecutionHelper {
 	 * @param source The string to check
 	 * @return The 'true' value if this string is float of 'false' if not
 	 */
-	public boolean isFloat(String source) {
+	public boolean isFloat(@Nullable String source) {
+		if(source == null || source.isEmpty())
+			return false;
+
 		try {
 			Float.parseFloat(source);
 			return true;
@@ -104,7 +116,10 @@ public abstract class ExecutionHelper {
 	 * @param source The string to check
 	 * @return The 'true' value if this string is double of 'false' if not
 	 */
-	public boolean isDouble(String source) {
+	public boolean isDouble(@Nullable String source) {
+		if(source == null || source.isEmpty())
+			return false;
+
 		try {
 			Double.parseDouble(source);
 			return true;
@@ -118,7 +133,10 @@ public abstract class ExecutionHelper {
 	 * @param source The string to check
 	 * @return The 'true' value if this string is boolean of 'false' if not
 	 */
-	public boolean isBoolean(String source) {
+	public boolean isBoolean(@NotNull String source) {
+		if(source == null || source.isEmpty())
+			return false;
+
 		return source.equalsIgnoreCase("true") || source.equalsIgnoreCase("false");
 	}
 	
