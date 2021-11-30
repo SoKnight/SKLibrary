@@ -67,7 +67,6 @@ public abstract class SubcommandsDispatcher extends StandaloneExecutor {
 		
 		EnhancedExecutor executor = executors.get(subcommand.toLowerCase());
 		args.getDispatchPath().appendCommand(subcommand);
-		args.remove(0);
 		
 		executor.validateAndExecute(sender, args);
 	}
@@ -91,7 +90,7 @@ public abstract class SubcommandsDispatcher extends StandaloneExecutor {
 			return null;
 
 		args.getDispatchPath().appendCommand(subcommand);
-		return executors.get(subcommand).validateAndTabComplete(sender, args);
+		return executors.get(subcommand.toLowerCase()).validateAndTabComplete(sender, args);
 	}
 
 }
