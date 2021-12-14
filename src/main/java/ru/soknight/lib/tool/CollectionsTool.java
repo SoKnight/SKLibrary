@@ -1,9 +1,13 @@
 package ru.soknight.lib.tool;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -27,9 +31,8 @@ public class CollectionsTool {
 		
 		if(start >= targetList.size()) return empty;
 		if(end >= targetList.size()) end = targetList.size();
-		
-		List<T> onpage = targetList.subList(start, end);
-		return onpage;
+
+		return targetList.subList(start, end);
 	}
 	
 	/**
@@ -49,13 +52,26 @@ public class CollectionsTool {
 		if(start >= map.size()) return output;
 		if(end >= map.size()) end = map.size();
 
-		List<K> keys = map.keySet().stream().collect(Collectors.toList());
+		List<K> keys = new ArrayList<>(map.keySet());
 		for(int i = start; i < end; i++) {
 			K key = keys.get(i);
 			output.put(key, map.get(key));
 		}
 
 		return output;
+	}
+
+	public static <T, K, V> @Nullable Map<K, V> getMapFromList(
+			@Nullable List<T> list,
+			@NotNull Function<T, K> keyMapper,
+			@NotNull Function<T, V> valueMapper
+	) {
+		if(list == null)
+			return null;
+
+		return !list.isEmpty()
+				? list.stream().collect(Collectors.toMap(keyMapper, valueMapper, (v1, v2) -> v2, LinkedHashMap::new))
+				: new LinkedHashMap<>();
 	}
 	
 }

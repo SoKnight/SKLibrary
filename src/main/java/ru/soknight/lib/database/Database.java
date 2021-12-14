@@ -6,10 +6,15 @@ import com.j256.ormlite.table.TableUtils;
 import lombok.Getter;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 import ru.soknight.lib.configuration.Configuration;
 import ru.soknight.lib.database.credentials.AuthDatabaseCredentials;
 import ru.soknight.lib.database.credentials.DatabaseCredentials;
 import ru.soknight.lib.database.exception.*;
+import ru.soknight.lib.database.migration.MigrationManager;
+import ru.soknight.lib.database.migration.exception.*;
+import ru.soknight.lib.database.migration.runtime.MigrationDataConverter;
+import ru.soknight.lib.database.migration.runtime.WrappedDataConverter;
 import ru.soknight.lib.tool.Validate;
 
 import java.sql.SQLException;
@@ -20,8 +25,9 @@ public class Database {
     private final Plugin plugin;
     private final DatabaseCredentials credentials;
     private final ConnectionSource bootstrapConnection;
+    private final MigrationManager migrationManager;
 
-    public Database(Plugin plugin, Configuration config) throws
+    public Database(@NotNull Plugin plugin, @NotNull Configuration config) throws
             CredentialsParseException,
             DatabaseBootstrapException,
             DriverNotFoundException,
@@ -32,7 +38,7 @@ public class Database {
         this(plugin, config.getSection("database"));
     }
 
-    public Database(Plugin plugin, ConfigurationSection databaseSection) throws
+    public Database(@NotNull Plugin plugin, @NotNull ConfigurationSection databaseSection) throws
             CredentialsParseException,
             DatabaseBootstrapException,
             DriverNotFoundException,
@@ -61,14 +67,18 @@ public class Database {
 
         // trying to connect
         this.bootstrapConnection = establishConnection();
+
+        // migrations manager instance creation
+        this.migrationManager = new MigrationManager(plugin, this);
     }
 
-    public Database complete() {
+    public @NotNull Database complete() {
+        Validate.notNull(bootstrapConnection, "bootstrapConnection");
         bootstrapConnection.closeQuietly();
         return this;
     }
 
-    public ConnectionSource establishConnection() throws SQLException {
+    public @NotNull ConnectionSource establishConnection() throws SQLException {
         Validate.notNull(credentials, "credentials");
 
         String url = credentials.getConnectionUrl(plugin);
@@ -83,18 +93,45 @@ public class Database {
         }
 
         throw new IllegalArgumentException(
-                "credentials auth is required, but it is not an instance of the AuthDatabaseCredentials!"
+                "Credentials auth is required, but it is not an " +
+                "instance of the AuthDatabaseCredentials!"
         );
     }
 
-    public Database createTable(Class<?> daoClass) throws SQLException {
+    public @NotNull Database performMigrations() throws AbstractMigrationException, SQLException {
+        migrationManager.runMigrations();
+        return this;
+    }
+
+    public @NotNull Database setActualSchemaVersion(int version) {
+        migrationManager.setActualSchemaVersion(version);
+        return this;
+    }
+
+    public @NotNull Database setMigrationsPathRoot(@NotNull String migrationsPathRoot) {
+        migrationManager.setMigrationsPathRoot(migrationsPathRoot);
+        return this;
+    }
+
+    public @NotNull Database registerDataConverter(@NotNull String migrationPath, @NotNull MigrationDataConverter<?, ?> dataConverter) {
+        migrationManager.registerDataConverter(migrationPath, dataConverter);
+        return this;
+    }
+
+    public @NotNull Database registerDataConverter(@NotNull WrappedDataConverter<?, ?> wrappedDataConverter) {
+        migrationManager.registerDataConverter(wrappedDataConverter);
+        return this;
+    }
+
+    public @NotNull Database createTable(@NotNull Class<?> daoClass) throws SQLException {
+        Validate.notNull(daoClass, "daoClass");
         Validate.notNull(bootstrapConnection, "bootstrapConnection");
 
         TableUtils.createTableIfNotExists(bootstrapConnection, daoClass);
         return this;
     }
 
-    public Database createTables(Class<?>... daoClasses) throws SQLException {
+    public @NotNull Database createTables(@NotNull Class<?>... daoClasses) throws SQLException {
         Validate.notNull(daoClasses, "daoClasses");
         Validate.notNull(bootstrapConnection, "bootstrapConnection");
 
