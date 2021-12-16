@@ -81,8 +81,6 @@ public abstract class AbstractConfiguration {
 		this.fileName = fileName;
 		this.dataFolderPath = dataFolderPath;
 		this.resource = resource;
-
-		refresh();
 	}
 
 	/**
