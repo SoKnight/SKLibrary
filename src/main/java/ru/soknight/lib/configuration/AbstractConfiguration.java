@@ -28,9 +28,9 @@ import java.util.stream.Collectors;
 public abstract class AbstractConfiguration {
 
 	protected final @NotNull JavaPlugin plugin;
-	protected final @NotNull String fileName;
 	protected final @NotNull Path dataFolderPath;
-	protected final @Nullable InputStream resource;
+	protected @NotNull String fileName;
+	protected @Nullable InputStream resource;
 
 	protected FileConfiguration configuration;
 
@@ -55,7 +55,7 @@ public abstract class AbstractConfiguration {
 	public AbstractConfiguration(
 			@NotNull JavaPlugin plugin,
 			@NotNull String fileName,
-			@NotNull InputStream resource
+			@Nullable InputStream resource
 	) {
 		this(plugin, fileName, plugin.getDataFolder().toPath(), resource);
 	}
@@ -71,12 +71,11 @@ public abstract class AbstractConfiguration {
 			@NotNull JavaPlugin plugin,
 			@NotNull String fileName,
 			@NotNull Path dataFolderPath,
-			@NotNull InputStream resource
+			@Nullable InputStream resource
 	) {
 		Validate.notNull(plugin, "plugin");
 		Validate.notNull(fileName, "fileName");
 		Validate.notNull(dataFolderPath, "dataFolderPath");
-		Validate.notNull(resource, "resource");
 
 		this.plugin = plugin;
 		this.fileName = fileName;
@@ -157,7 +156,7 @@ public abstract class AbstractConfiguration {
 			}
 		}
 
-		Path filePath = dataFolderPath.resolve(fileName.replace('/', File.separatorChar));
+		Path filePath = dataFolderPath.resolve(getOutputFilePath());
 		Path parentDirectory = filePath.getParent();
 
 		if(!Files.isDirectory(parentDirectory)) {
@@ -171,19 +170,31 @@ public abstract class AbstractConfiguration {
 
 		if(!Files.isRegularFile(filePath)) {
 			try {
-				if(resource == null) {
-					Files.createFile(filePath);
-					sendDebugMessage(verbose, "Created an empty configuration file in: %s", filePath.toAbsolutePath());
-				} else {
-					Files.copy(resource, filePath, StandardCopyOption.REPLACE_EXISTING);
-					sendDebugMessage(verbose, "Copied a configuration file from internal resource to: %s", filePath.toAbsolutePath());
-				}
+				createOutputFile(filePath, verbose);
 			} catch (IOException ex) {
 				sendErrorMessage(verbose, "Couldn't create a configuration file in '%s'!", ex, filePath.toAbsolutePath());
 			}
 		}
 		
 		this.configuration = YamlConfiguration.loadConfiguration(filePath.toFile());
+	}
+
+	protected @NotNull String getResourcePath() {
+		return fileName;
+	}
+
+	protected @NotNull String getOutputFilePath() {
+		return fileName.replace('/', File.separatorChar);
+	}
+
+	protected void createOutputFile(@NotNull Path filePath, boolean verbose) throws IOException {
+		if(resource == null) {
+			Files.createFile(filePath);
+			sendDebugMessage(verbose, "Created an empty configuration file in: %s", filePath.toAbsolutePath());
+		} else {
+			Files.copy(resource, filePath, StandardCopyOption.REPLACE_EXISTING);
+			sendDebugMessage(verbose, "Copied a configuration file from internal resource to: %s", filePath.toAbsolutePath());
+		}
 	}
 
 	/********************************
