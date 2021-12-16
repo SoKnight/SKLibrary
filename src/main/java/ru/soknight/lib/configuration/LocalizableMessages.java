@@ -7,6 +7,7 @@ import ru.soknight.lib.configuration.locale.resolver.LocaleTagResolver;
 import ru.soknight.lib.tool.Validate;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 
 public class LocalizableMessages extends Messages {
@@ -30,6 +31,16 @@ public class LocalizableMessages extends Messages {
         super(plugin, "", dataFolderPath, null);
     }
 
+    /**
+     * Get the actual and always valid locale tag that will be used for the localization selecting on next refresh.<br>
+     * It may be a valid custom user's locale tag or fallback default locale tag.
+     * @return The actual locale tag.
+     */
+    public @NotNull String getActualLocaleTag() {
+        String localeTag = currentLocaleResolver.resolve();
+        return localeTag != null && currentLocaleExaminer.test(localeTag) ? localeTag : defaultLocaleTag;
+    }
+
     @Override
     protected @NotNull String getResourcePath() {
         String localeTag = getActualLocaleTag();
@@ -39,12 +50,13 @@ public class LocalizableMessages extends Messages {
     @Override
     protected @NotNull String getOutputFilePath() {
         String localeTag = getActualLocaleTag();
-        return localeOutputFilePathFormat.replace(TAG_PLACEHOLDER, localeTag).replace('/', File.separatorChar);
+        return localeOutputFilePathFormat.replace(TAG_PLACEHOLDER, localeTag);
     }
 
-    public @NotNull String getActualLocaleTag() {
-        String localeTag = currentLocaleResolver.resolve();
-        return localeTag != null && currentLocaleExaminer.test(localeTag) ? localeTag : defaultLocaleTag;
+    @Override
+    protected void createOutputFile(@NotNull Path filePath, boolean verbose) throws IOException {
+        super.resource = plugin.getResource(getResourcePath());
+        super.createOutputFile(filePath, verbose);
     }
 
     /**
@@ -109,7 +121,7 @@ public class LocalizableMessages extends Messages {
      */
     public @NotNull LocalizableMessages withLocaleOutputFilePathFormat(@NotNull String localeOutputFilePathFormat) {
         Validate.notNull(localeOutputFilePathFormat, "localeOutputFilePathFormat");
-        this.localeOutputFilePathFormat = localeOutputFilePathFormat;
+        this.localeOutputFilePathFormat = localeOutputFilePathFormat.replace('/', File.separatorChar);
         return this;
     }
 
