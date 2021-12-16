@@ -19,10 +19,14 @@ public class SKLibraryPlugin extends JavaPlugin {
 		setORMLiteLogLevel(Level.ERROR);
 
 		Configuration config = new Configuration(this, "config.yml");
+		config.refresh();
+
 		if(!config.getBoolean("enabled"))
 			return;
 
 		Messages messages = new Messages(this, "messages.yml");
+		messages.refresh();
+
 		new CommandInfo(this, messages);
 	}
 
