@@ -12,17 +12,22 @@ import ru.soknight.lib.database.credentials.AuthDatabaseCredentials;
 import ru.soknight.lib.database.credentials.DatabaseCredentials;
 import ru.soknight.lib.database.exception.*;
 import ru.soknight.lib.database.migration.MigrationManager;
-import ru.soknight.lib.database.migration.exception.*;
+import ru.soknight.lib.database.migration.exception.AbstractMigrationException;
 import ru.soknight.lib.database.migration.runtime.MigrationDataConverter;
 import ru.soknight.lib.database.migration.runtime.WrappedDataConverter;
 import ru.soknight.lib.tool.Validate;
 
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Getter
 public class Database {
 
     private final Plugin plugin;
+    private final Set<Class<?>> registeredTables;
+
     private final DatabaseCredentials credentials;
     private final ConnectionSource bootstrapConnection;
     private final MigrationManager migrationManager;
@@ -47,6 +52,7 @@ public class Database {
             UnknownDatabaseTypeException
     {
         this.plugin = plugin;
+        this.registeredTables = new LinkedHashSet<>();
 
         // check is database section exists
         if(databaseSection == null)
@@ -120,6 +126,18 @@ public class Database {
 
     public @NotNull Database registerDataConverter(@NotNull WrappedDataConverter<?, ?> wrappedDataConverter) {
         migrationManager.registerDataConverter(wrappedDataConverter);
+        return this;
+    }
+
+    public @NotNull Database registerTable(@NotNull Class<?> daoClass) {
+        Validate.notNull(daoClass, "daoClass");
+        registeredTables.add(daoClass);
+        return this;
+    }
+
+    public @NotNull Database registerTables(@NotNull Class<?>... daoClasses) {
+        Validate.notNull(daoClasses, "daoClasses");
+        registeredTables.addAll(Arrays.asList(daoClasses));
         return this;
     }
 
