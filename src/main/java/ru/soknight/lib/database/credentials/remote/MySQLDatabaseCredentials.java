@@ -1,9 +1,11 @@
-package ru.soknight.lib.database.credentials;
+package ru.soknight.lib.database.credentials.remote;
 
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.bukkit.plugin.Plugin;
 import ru.soknight.lib.database.DatabaseType;
+import ru.soknight.lib.database.credentials.AuthDatabaseCredentials;
+import ru.soknight.lib.database.credentials.CredentialField;
 import ru.soknight.lib.database.exception.DriverNotFoundException;
 import ru.soknight.lib.tool.Validate;
 
@@ -14,7 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Getter
-public class MySQLDatabaseCredentials implements AuthDatabaseCredentials {
+public class MySQLDatabaseCredentials implements AuthDatabaseCredentials, RemoteDatabaseCredentials {
 
     public static final String URL_PATTERN = "jdbc:mysql://%s:%d/%s%s";
 

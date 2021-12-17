@@ -4,9 +4,9 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import ru.soknight.lib.database.credentials.DatabaseCredentials;
-import ru.soknight.lib.database.credentials.MySQLDatabaseCredentials;
-import ru.soknight.lib.database.credentials.PostgreSQLDatabaseCredentials;
-import ru.soknight.lib.database.credentials.SQLiteDatabaseCredentials;
+import ru.soknight.lib.database.credentials.remote.MySQLDatabaseCredentials;
+import ru.soknight.lib.database.credentials.remote.PostgreSQLDatabaseCredentials;
+import ru.soknight.lib.database.credentials.local.SQLiteDatabaseCredentials;
 import ru.soknight.lib.database.exception.UnknownDatabaseTypeException;
 
 import java.util.Arrays;

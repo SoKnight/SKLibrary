@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
 import ru.soknight.lib.database.DataRegistryManager;
 import ru.soknight.lib.database.Database;
+import ru.soknight.lib.database.credentials.DatabaseCredentials;
 import ru.soknight.lib.database.migration.annotation.ActualSchemaVersion;
 import ru.soknight.lib.database.migration.config.MigrationParser;
 import ru.soknight.lib.database.migration.exception.DataConvertationException;
@@ -19,6 +20,7 @@ import ru.soknight.lib.database.migration.exception.MigrationRunException;
 import ru.soknight.lib.database.migration.runtime.MigrationDataConverter;
 import ru.soknight.lib.database.migration.runtime.MigrationRunner;
 import ru.soknight.lib.database.migration.runtime.WrappedDataConverter;
+import ru.soknight.lib.database.migration.schema.DatabaseSchemaAnalyzer;
 import ru.soknight.lib.tool.Validate;
 
 import java.io.InputStream;
@@ -59,7 +61,9 @@ public class MigrationManager {
     private final Database database;
     private final DataRegistryManager dataRegistryManager;
     private final Map<String, MigrationDataConverter<?, ?>> dataConverters;
+    private final SortedMap<Integer, DatabaseSchemaAnalyzer> schemaAnalyzers;
 
+    private Integer currentSchemaVersion;
     private Integer actualSchemaVersion;
     private String migrationsPathRoot = MigrationParser.DEFAULT_MIGRATIONS_PATH_ROOT;
 
@@ -68,6 +72,53 @@ public class MigrationManager {
         this.database = database;
         this.dataRegistryManager = new DataRegistryManager(plugin, database.getBootstrapConnection());
         this.dataConverters = new LinkedHashMap<>();
+        this.schemaAnalyzers = new TreeMap<>(Comparator.naturalOrder());
+    }
+
+    public boolean analyzeDatabaseSchema() {
+        DatabaseCredentials credentials = database.getCredentials();
+        ConnectionSource bootstrapConnection = database.getBootstrapConnection();
+
+        resolveActualSchemaVersion();
+
+        boolean hasLastRevision = false;
+        boolean someonePassed = false;
+
+        Iterator<Integer> iterator = schemaAnalyzers.keySet().iterator();
+        while(iterator.hasNext()) {
+            int schemaVersion = iterator.next();
+            DatabaseSchemaAnalyzer analyzer = schemaAnalyzers.get(schemaVersion);
+
+            try {
+                if(analyzer.analyze(bootstrapConnection, schemaVersion)) {
+                    this.currentSchemaVersion = schemaVersion;
+                    someonePassed = true;
+                    printInfo("[Analyzer] Version %d check has been passed!", schemaVersion);
+                    if(!iterator.hasNext()) {
+                        hasLastRevision = true;
+                    }
+                }
+            } catch (SQLException ex) {
+                printInfo("[Analyzer] Version %d check has throwed an exception: %s", schemaVersion, ex);
+            }
+        }
+
+        if(!someonePassed) {
+            this.currentSchemaVersion = actualSchemaVersion;
+            hasLastRevision = true;
+        }
+
+        if(currentSchemaVersion != null) {
+            updateCurrentSchemaVersion(currentSchemaVersion);
+            if(Objects.equals(currentSchemaVersion, actualSchemaVersion)) {
+                printInfo("Database schema is up to date.");
+                return true;
+            } else {
+                printInfo("Detected database schema version: %d.", currentSchemaVersion);
+            }
+        }
+
+        return hasLastRevision;
     }
 
     public void registerDataConverter(@NotNull String migrationPath, @NotNull MigrationDataConverter<?, ?> dataConverter) {
@@ -86,6 +137,11 @@ public class MigrationManager {
         String migrationPath = wrappedDataConverter.getFullMigrationPath(migrationsPathRoot);
         MigrationDataConverter<?, ?> dataConverter = wrappedDataConverter.getDataConverter();
         registerDataConverter(migrationPath, dataConverter);
+    }
+
+    public void registerSchemaAnalyzer(int schemaVersion, @NotNull DatabaseSchemaAnalyzer schemaAnalyzer) {
+        Validate.notNull(schemaAnalyzer, "schemaAnalyzer");
+        schemaAnalyzers.put(schemaVersion, schemaAnalyzer);
     }
 
     public void setActualSchemaVersion(int actualSchemaVersion) {
@@ -107,7 +163,7 @@ public class MigrationManager {
         int currentSchemaVersion = getCurrentSchemaVersion();
 
         if(actualSchemaVersion == currentSchemaVersion) {
-            plugin.getLogger().info("Database schema is up to date!");
+            printInfo("Database schema is up to date.");
             return true;
         }
 
@@ -264,6 +320,9 @@ public class MigrationManager {
     }
 
     public int getCurrentSchemaVersion(int defaultVersion) {
+        if(currentSchemaVersion != null)
+            return currentSchemaVersion;
+
         return dataRegistryManager.getEntryOrDefault(SCHEMA_VERSION_KEY, defaultVersion).join()
                 .getValueAsInt()
                 .orElseThrow(() -> new IllegalArgumentException("Database has returned a non-digital schema version!"));
@@ -281,6 +340,7 @@ public class MigrationManager {
         if(typeAnnotation != null) {
             int value = typeAnnotation.value();
             Validate.isTrue(value >= 0, "Current schema version cannot be negative!");
+            this.actualSchemaVersion = value;
             return OptionalInt.of(value);
         }
 
@@ -306,6 +366,7 @@ public class MigrationManager {
                 } else {
                     int value = fieldAnnotation.value();
                     Validate.isTrue(value >= 0, "Current schema version cannot be negative!");
+                    this.actualSchemaVersion = value;
                     return OptionalInt.of(value);
                 }
             }

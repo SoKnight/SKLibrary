@@ -3,6 +3,8 @@ package ru.soknight.lib.database.credentials;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.Plugin;
 import ru.soknight.lib.database.DatabaseType;
+import ru.soknight.lib.database.credentials.local.LocalDatabaseCredentials;
+import ru.soknight.lib.database.credentials.remote.RemoteDatabaseCredentials;
 import ru.soknight.lib.database.exception.CredentialsParseException;
 import ru.soknight.lib.database.exception.DriverLoadException;
 import ru.soknight.lib.database.exception.DriverNotFoundException;
@@ -33,6 +35,23 @@ public interface DatabaseCredentials {
      */
     default boolean isAuthRequired() {
         return false;
+    }
+
+    /**
+     * Check is this database is based on the local storage file (e.g.: SQLite).
+     * @return 'true' if these credentials belongs to a local database or 'false' overwise.
+     */
+    default boolean isLocalDatabase() {
+        return this instanceof LocalDatabaseCredentials;
+    }
+
+
+    /**
+     * Check is this database is based on the standalone remote server (e.g.: MySQL).
+     * @return 'true' if these credentials belongs to a remote database or 'false' overwise.
+     */
+    default boolean isRemoteDatabase() {
+        return this instanceof RemoteDatabaseCredentials;
     }
 
     /**

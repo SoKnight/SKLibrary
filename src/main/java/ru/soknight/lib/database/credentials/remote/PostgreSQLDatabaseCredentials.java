@@ -1,9 +1,11 @@
-package ru.soknight.lib.database.credentials;
+package ru.soknight.lib.database.credentials.remote;
 
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.bukkit.plugin.Plugin;
 import ru.soknight.lib.database.DatabaseType;
+import ru.soknight.lib.database.credentials.AuthDatabaseCredentials;
+import ru.soknight.lib.database.credentials.CredentialField;
 import ru.soknight.lib.database.exception.DriverLoadException;
 import ru.soknight.lib.database.exception.DriverNotFoundException;
 import ru.soknight.lib.external.voidpointer.bukkit.framework.dependency.DependencyLoader;
@@ -25,7 +27,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Getter
-public class PostgreSQLDatabaseCredentials implements AuthDatabaseCredentials {
+public class PostgreSQLDatabaseCredentials implements AuthDatabaseCredentials, RemoteDatabaseCredentials {
 
     private static final String POSTGRESQL_URL = "https://jdbc.postgresql.org/download/postgresql-42.2.18.jar";
     private static final String POSTGRESQL_CHECKSUM = "d6895bb05ac7b9c85c4e89f3880127e3";

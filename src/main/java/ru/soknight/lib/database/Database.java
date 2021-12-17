@@ -12,15 +12,14 @@ import ru.soknight.lib.database.credentials.AuthDatabaseCredentials;
 import ru.soknight.lib.database.credentials.DatabaseCredentials;
 import ru.soknight.lib.database.exception.*;
 import ru.soknight.lib.database.migration.MigrationManager;
-import ru.soknight.lib.database.migration.exception.AbstractMigrationException;
+import ru.soknight.lib.database.migration.exception.*;
 import ru.soknight.lib.database.migration.runtime.MigrationDataConverter;
 import ru.soknight.lib.database.migration.runtime.WrappedDataConverter;
+import ru.soknight.lib.database.migration.schema.DatabaseSchemaAnalyzer;
 import ru.soknight.lib.tool.Validate;
 
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.*;
 
 @Getter
 public class Database {
@@ -78,8 +77,28 @@ public class Database {
         this.migrationManager = new MigrationManager(plugin, this);
     }
 
-    public @NotNull Database complete() {
+    public @NotNull Database complete() throws SQLException {
+        try {
+            return complete(false);
+        } catch (AbstractMigrationException ignored) {
+            return this;
+        }
+    }
+
+    public @NotNull Database complete(boolean performMigrations) throws AbstractMigrationException, SQLException {
         Validate.notNull(bootstrapConnection, "bootstrapConnection");
+
+        // analyzing database schema
+        boolean hasLastRevision = migrationManager.analyzeDatabaseSchema();
+
+        // creating all registered tables
+        createTables(registeredTables);
+
+        // perform migrations
+        if(!hasLastRevision && performMigrations)
+            migrationManager.runMigrations();
+
+        // closing the bootstrap connection
         bootstrapConnection.closeQuietly();
         return this;
     }
@@ -104,11 +123,6 @@ public class Database {
         );
     }
 
-    public @NotNull Database performMigrations() throws AbstractMigrationException, SQLException {
-        migrationManager.runMigrations();
-        return this;
-    }
-
     public @NotNull Database setActualSchemaVersion(int version) {
         migrationManager.setActualSchemaVersion(version);
         return this;
@@ -129,15 +143,25 @@ public class Database {
         return this;
     }
 
-    public @NotNull Database registerTable(@NotNull Class<?> daoClass) {
-        Validate.notNull(daoClass, "daoClass");
-        registeredTables.add(daoClass);
+    public @NotNull Database registerSchemaAnalyzer(int schemaVersion, @NotNull DatabaseSchemaAnalyzer schemaAnalyzer) {
+        migrationManager.registerSchemaAnalyzer(schemaVersion, schemaAnalyzer);
         return this;
     }
 
-    public @NotNull Database registerTables(@NotNull Class<?>... daoClasses) {
-        Validate.notNull(daoClasses, "daoClasses");
-        registeredTables.addAll(Arrays.asList(daoClasses));
+    public @NotNull Database registerTable(@NotNull Class<?> tableClasses) {
+        Validate.notNull(tableClasses, "tableClasses");
+        registeredTables.add(tableClasses);
+        return this;
+    }
+
+    public @NotNull Database registerTables(@NotNull Class<?>... tableClasses) {
+        Validate.notEmpty(tableClasses, "tableClasses");
+        return registerTables(Arrays.asList(tableClasses));
+    }
+
+    public @NotNull Database registerTables(@NotNull Collection<Class<?>> tableClasses) {
+        Validate.notEmpty(tableClasses, "tableClasses");
+        registeredTables.addAll(tableClasses);
         return this;
     }
 
@@ -149,7 +173,20 @@ public class Database {
         return this;
     }
 
+    /**
+     * @deprecated Use {@link #registerTable(Class)} instead.
+     */
+    @Deprecated
     public @NotNull Database createTables(@NotNull Class<?>... daoClasses) throws SQLException {
+        Validate.notNull(daoClasses, "daoClasses");
+        return createTables(Arrays.asList(daoClasses));
+    }
+
+    /**
+     * @deprecated Use {@link #registerTables(Collection)} instead.
+     */
+    @Deprecated
+    public @NotNull Database createTables(@NotNull Collection<Class<?>> daoClasses) throws SQLException {
         Validate.notNull(daoClasses, "daoClasses");
         Validate.notNull(bootstrapConnection, "bootstrapConnection");
 
