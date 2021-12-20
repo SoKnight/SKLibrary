@@ -1,8 +1,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <groupId>ru.soknight</groupId>
     <artifactId>sklibrary</artifactId>
     <version>1.15.0</version>
+    <packaging>jar</packaging>
     
     <name>SKLibrary</name>
     <description>The library for SoKnight's plugins</description>
@@ -10,8 +12,13 @@
     <properties>
         <!-- Building -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
+        <java.version>8</java.version>
+
+        <!-- Manifest -->
+        <manifest.contact>https://vk.me/soknight/</manifest.contact>
+        <manifest.developer>SoKnight</manifest.developer>
+        <manifest.github>https://github.com/SoKnight/SKLibrary</manifest.github>
+        <manifest.version>${project.version}</manifest.version>
 
         <!-- Dependencies -->
         <spigot.api.version>1.17.1-R0.1-SNAPSHOT</spigot.api.version>
@@ -21,9 +28,10 @@
         <lombok.version>1.18.22</lombok.version>
 
         <!-- Maven plugins -->
-        <compiler.maven.plugin.version>3.8.1</compiler.maven.plugin.version>
-        <source.maven.plugin.version>3.2.0</source.maven.plugin.version>
-        <shade.maven.plugin.version>3.2.1</shade.maven.plugin.version>
+        <maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
+        <maven.jar.plugin.version>3.2.0</maven.jar.plugin.version>
+        <maven.source.plugin.version>3.2.0</maven.source.plugin.version>
+        <maven.shade.plugin.version>3.2.1</maven.shade.plugin.version>
     </properties>
     
     <repositories>
@@ -81,24 +89,47 @@
             </resource>
         </resources>
         <plugins>
-            <!-- Compiler plugin -->
+            <!-- Maven compiler plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>${compiler.maven.plugin.version}</version>
+                <version>${maven.compiler.plugin.version}</version>
                 <configuration>
                     <compilerArgs>
                         <arg>-Xlint:deprecation</arg>
                         <arg>-Xlint:unchecked</arg>
                     </compilerArgs>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
                 </configuration>
             </plugin>
 
-            <!-- Source plugin -->
+            <!-- Maven jar plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>${maven.jar.plugin.version}</version>
+                <configuration>
+                    <archive>
+                        <addMavenDescriptor>false</addMavenDescriptor>
+                        <manifest>
+                            <addDefaultEntries>false</addDefaultEntries>
+                        </manifest>
+                        <manifestEntries>
+                            <Contact>${manifest.contact}</Contact>
+                            <Developer>${manifest.developer}</Developer>
+                            <GitHub>${manifest.github}</GitHub>
+                            <Version>${manifest.version}</Version>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+
+            <!-- Maven source plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <version>${source.maven.plugin.version}</version>
+                <version>${maven.source.plugin.version}</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
@@ -109,15 +140,27 @@
                 </executions>
             </plugin>
 
-            <!-- Shade plugin -->
+            <!-- Maven shade plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>${shade.maven.plugin.version}</version>
+                <version>${maven.shade.plugin.version}</version>
                 <configuration>
                     <createDependencyReducedPom>false</createDependencyReducedPom>
                     <shadedArtifactAttached>true</shadedArtifactAttached>
-                    <finalName>${project.name}-${project.version}-shaded</finalName>
+                    <finalName>${project.build.finalName}-full</finalName>
+                    <filters>
+                        <filter>
+                            <artifact>*:*</artifact>
+                            <excludes>
+                                <exclude>META-INF/maven/</exclude>
+                                <exclude>META-INF/versions/</exclude>
+                                <exclude>META-INF/*.md</exclude>
+                                <exclude>META-INF/CHANGES</exclude>
+                                <exclude>META-INF/LICENSE</exclude>
+                            </excludes>
+                        </filter>
+                    </filters>
                     <relocations>
                         <relocation>
                             <pattern>org.intellij.lang.annotations</pattern>
