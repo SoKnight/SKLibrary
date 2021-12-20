@@ -93,13 +93,11 @@ public class MigrationManager {
                 if(analyzer.analyze(bootstrapConnection, schemaVersion)) {
                     this.currentSchemaVersion = schemaVersion;
                     someonePassed = true;
-                    printInfo("[Analyzer] Version %d check has been passed!", schemaVersion);
                     if(!iterator.hasNext()) {
                         hasLastRevision = true;
                     }
                 }
-            } catch (SQLException ex) {
-                printInfo("[Analyzer] Version %d check has throwed an exception: %s", schemaVersion, ex);
+            } catch (SQLException ignored) {
             }
         }
 
