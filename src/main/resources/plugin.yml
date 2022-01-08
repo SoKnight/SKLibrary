@@ -4,7 +4,7 @@ author: SoKnight
 version: ${project.version}
 load: startup
 libraries:
-- org.postgresql:postgresql:42.2.22
+- org.postgresql:postgresql:42.3.1
 api-version: 1.13
 
 commands:

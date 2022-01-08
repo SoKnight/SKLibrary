@@ -3,7 +3,7 @@
 
     <groupId>ru.soknight</groupId>
     <artifactId>sklibrary</artifactId>
-    <version>1.15.0</version>
+    <version>1.15.1</version>
     <packaging>jar</packaging>
     
     <name>SKLibrary</name>
@@ -22,7 +22,7 @@
 
         <!-- Dependencies -->
         <spigot.api.version>1.17.1-R0.1-SNAPSHOT</spigot.api.version>
-        <ormlite.version>6.0</ormlite.version>
+        <ormlite.version>6.1</ormlite.version>
         <jsoup.version>1.14.3</jsoup.version>
         <jetbrains.annotations.version>22.0.0</jetbrains.annotations.version>
         <lombok.version>1.18.22</lombok.version>

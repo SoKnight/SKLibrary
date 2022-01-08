@@ -90,12 +90,13 @@ public class Database {
 
         // analyzing database schema
         boolean hasLastRevision = migrationManager.analyzeDatabaseSchema();
+        boolean migrationsRequired = performMigrations && !hasLastRevision;
 
         // creating all registered tables
         createTables(registeredTables);
 
         // perform migrations
-        if(!hasLastRevision && performMigrations)
+        if(migrationsRequired)
             migrationManager.runMigrations();
 
         // closing the bootstrap connection
@@ -148,9 +149,9 @@ public class Database {
         return this;
     }
 
-    public @NotNull Database registerTable(@NotNull Class<?> tableClasses) {
-        Validate.notNull(tableClasses, "tableClasses");
-        registeredTables.add(tableClasses);
+    public @NotNull Database registerTable(@NotNull Class<?> tableClass) {
+        Validate.notNull(tableClass, "tableClass");
+        registeredTables.add(tableClass);
         return this;
     }
 
@@ -162,6 +163,18 @@ public class Database {
     public @NotNull Database registerTables(@NotNull Collection<Class<?>> tableClasses) {
         Validate.notEmpty(tableClasses, "tableClasses");
         registeredTables.addAll(tableClasses);
+        return this;
+    }
+
+    public @NotNull Database unregisterTable(@NotNull Class<?> tableClass) {
+        Validate.notNull(tableClass, "tableClass");
+        registeredTables.remove(tableClass);
+        return this;
+    }
+
+    public @NotNull Database unregisterTables(@NotNull Collection<Class<?>> tableClasses) {
+        Validate.notEmpty(tableClasses, "tableClasses");
+        registeredTables.removeAll(tableClasses);
         return this;
     }
 

@@ -21,6 +21,7 @@ import ru.soknight.lib.database.migration.runtime.MigrationDataConverter;
 import ru.soknight.lib.database.migration.runtime.MigrationRunner;
 import ru.soknight.lib.database.migration.runtime.WrappedDataConverter;
 import ru.soknight.lib.database.migration.schema.DatabaseSchemaAnalyzer;
+import ru.soknight.lib.database.migration.schema.TableStructuresAnalyzer;
 import ru.soknight.lib.tool.Validate;
 
 import java.io.InputStream;
@@ -33,7 +34,7 @@ import java.util.stream.Collectors;
 
 public class MigrationManager {
 
-    public static final String SCHEMA_VERSION_KEY = "schema_version";
+    public static final String SCHEMA_VERSION_KEY_FORMAT = "%s_schema_version";
     public static final int DEFAULT_SCHEMA_VERSION = 1;
 
     private static final Comparator<Migration> MIGRATION_COMPARATOR;
@@ -93,8 +94,13 @@ public class MigrationManager {
                 if(analyzer.analyze(bootstrapConnection, schemaVersion)) {
                     this.currentSchemaVersion = schemaVersion;
                     someonePassed = true;
+
                     if(!iterator.hasNext()) {
                         hasLastRevision = true;
+                    }
+
+                    if(analyzer instanceof TableStructuresAnalyzer) {
+                        database.unregisterTables(((TableStructuresAnalyzer) analyzer).getTableClasses());
                     }
                 }
             } catch (SQLException ignored) {
@@ -321,18 +327,20 @@ public class MigrationManager {
         if(currentSchemaVersion != null)
             return currentSchemaVersion;
 
-        return dataRegistryManager.getEntryOrDefault(SCHEMA_VERSION_KEY, defaultVersion).join()
+        String key = String.format(SCHEMA_VERSION_KEY_FORMAT, plugin.getName().toLowerCase());
+        return dataRegistryManager.getEntryOrDefault(key, defaultVersion).join()
                 .getValueAsInt()
                 .orElseThrow(() -> new IllegalArgumentException("Database has returned a non-digital schema version!"));
     }
 
     private void updateCurrentSchemaVersion(int version) {
-        dataRegistryManager.saveEntry(SCHEMA_VERSION_KEY, version).join();
+        String key = String.format(SCHEMA_VERSION_KEY_FORMAT, plugin.getName().toLowerCase());
+        dataRegistryManager.saveEntry(key, version).join();
     }
 
     public @NotNull OptionalInt resolveActualSchemaVersion() {
         if(actualSchemaVersion != null)
-            OptionalInt.of(actualSchemaVersion);
+            return OptionalInt.of(actualSchemaVersion);
 
         ActualSchemaVersion typeAnnotation = plugin.getClass().getAnnotation(ActualSchemaVersion.class);
         if(typeAnnotation != null) {

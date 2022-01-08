@@ -29,8 +29,8 @@ import java.util.stream.Collectors;
 @Getter
 public class PostgreSQLDatabaseCredentials implements AuthDatabaseCredentials, RemoteDatabaseCredentials {
 
-    private static final String POSTGRESQL_URL = "https://jdbc.postgresql.org/download/postgresql-42.2.18.jar";
-    private static final String POSTGRESQL_CHECKSUM = "d6895bb05ac7b9c85c4e89f3880127e3";
+    private static final String POSTGRESQL_URL = "https://jdbc.postgresql.org/download/postgresql-42.3.1.jar";
+    private static final String POSTGRESQL_CHECKSUM = "30299cd5ee3f86eb748b6cc1157df484";
     private static final String POSTGRESQL_OUTPUT_FILE = "postgresql.jar";
 
     public static final String URL_PATTERN = "jdbc:postgresql://%s:%d/%s%s";

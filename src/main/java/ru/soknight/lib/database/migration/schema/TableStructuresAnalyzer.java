@@ -2,12 +2,14 @@ package ru.soknight.lib.database.migration.schema;
 
 import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.support.ConnectionSource;
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.SQLException;
 import java.util.Set;
 
-final class TableStructuresAnalyzer implements DatabaseSchemaAnalyzer {
+@Getter
+public final class TableStructuresAnalyzer implements DatabaseSchemaAnalyzer {
 
     private final Set<Class<?>> tableClasses;
 
