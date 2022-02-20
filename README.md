@@ -39,9 +39,9 @@ Add SKLibrary dependency:
     <dependencies>
         <!-- SKLibrary -->
         <dependency>
-            <groupId>com.github.SoKnight</groupId>
-            <artifactId>SKLibrary</artifactId>
-            <version>1.15.1</version>
+            <groupId>me.soknight</groupId>
+            <artifactId>sklibrary</artifactId>
+            <version>1.15.2</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
