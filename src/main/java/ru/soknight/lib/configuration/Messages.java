@@ -25,6 +25,8 @@ import java.util.List;
  */
 public class Messages extends AbstractConfiguration {
 
+	public static final String DISABLED_MESSAGE_MARKER = "@#DISABLED";
+
 	/**
 	 * Create a new messages instance using default data folder path and configuration resource.
 	 * @param plugin The plugin that will use this configuration.
@@ -65,22 +67,6 @@ public class Messages extends AbstractConfiguration {
 			@NotNull InputStream resource
 	) {
 		super(plugin, fileName, dataFolderPath, resource);
-	}
-
-	/**
-	 * @deprecated Use {@link #Messages(JavaPlugin, String, InputStream)} instead.
-	 */
-	@Deprecated
-	public Messages(JavaPlugin plugin, InputStream resource, String fileName) {
-		this(plugin, fileName, resource);
-	}
-
-	/**
-	 * @deprecated Use {@link #Messages(JavaPlugin, String, Path, InputStream)} instead.
-	 */
-	@Deprecated
-	public Messages(JavaPlugin plugin, File dataFolder, InputStream resource, String fileName) {
-		this(plugin, fileName, dataFolder.toPath(), resource);
 	}
 	
 	/**
@@ -268,7 +254,7 @@ public class Messages extends AbstractConfiguration {
 	 * @param toActionbar Should method to send this message into player's actionbar if it's possible
 	 */
 	public void send(CommandSender sender, String message, boolean toActionbar) {
-		if(sender == null || message == null) return;
+		if(sender == null || message == null || isIgnoredMessage(message)) return;
 		
 		if(toActionbar && sender instanceof Player) {
 			BaseComponent[] msg = TextComponent.fromLegacyText(message);
@@ -285,7 +271,7 @@ public class Messages extends AbstractConfiguration {
      * @param toActionbar Should method to send this message component into player's actionbar if it's possible
      */
     public void send(CommandSender sender, TextComponent message, boolean toActionbar) {
-        if(sender == null || message == null) return;
+        if(sender == null || message == null || isIgnoredMessage(message.toPlainText())) return;
         
         if(toActionbar && sender instanceof Player)
             ((Player) sender).spigot().sendMessage(ChatMessageType.ACTION_BAR, message);
@@ -303,12 +289,14 @@ public class Messages extends AbstractConfiguration {
 		if(sender == null || messages == null || messages.length == 0) return;
 		
 		if(toActionbar && sender instanceof Player) {
-			Arrays.stream(messages).forEach(message -> {
-				BaseComponent[] msg = TextComponent.fromLegacyText(message);
-				((Player) sender).spigot().sendMessage(ChatMessageType.ACTION_BAR, msg);
-			});
+			Arrays.stream(messages)
+					.filter(this::isValidMessage)
+					.forEach(message -> {
+						BaseComponent[] msg = TextComponent.fromLegacyText(message);
+						((Player) sender).spigot().sendMessage(ChatMessageType.ACTION_BAR, msg);
+					});
 		} else {
-			sender.sendMessage(messages);
+			sender.sendMessage(Arrays.stream(messages).filter(this::isValidMessage).toArray(String[]::new));
 		}
 	}
 	
@@ -322,12 +310,14 @@ public class Messages extends AbstractConfiguration {
 		if(sender == null || messages == null || messages.isEmpty()) return;
 		
 		if(toActionBar && sender instanceof Player) {
-			messages.forEach(message -> {
-				BaseComponent[] msg = TextComponent.fromLegacyText(message);
-				((Player) sender).spigot().sendMessage(ChatMessageType.ACTION_BAR, msg);
-			});
+			messages.stream()
+					.filter(this::isValidMessage)
+					.forEach(message -> {
+						BaseComponent[] msg = TextComponent.fromLegacyText(message);
+						((Player) sender).spigot().sendMessage(ChatMessageType.ACTION_BAR, msg);
+					});
 		} else {
-			sender.sendMessage(messages.toArray(new String[0]));
+			sender.sendMessage(messages.stream().filter(this::isValidMessage).toArray(String[]::new));
 		}
 	}
 	
@@ -426,6 +416,30 @@ public class Messages extends AbstractConfiguration {
 			return false;
 
 		return config.isSet(path + ".title") || config.isSet(path + ".subtitle");
+	}
+
+	private boolean isIgnoredMessage(String text) {
+		return text == null || text.equals(DISABLED_MESSAGE_MARKER);
+	}
+
+	private boolean isValidMessage(String text) {
+		return !isIgnoredMessage(text);
+	}
+
+	/**
+	 * @deprecated Use {@link #Messages(JavaPlugin, String, InputStream)} instead.
+	 */
+	@Deprecated
+	public Messages(JavaPlugin plugin, InputStream resource, String fileName) {
+		this(plugin, fileName, resource);
+	}
+
+	/**
+	 * @deprecated Use {@link #Messages(JavaPlugin, String, Path, InputStream)} instead.
+	 */
+	@Deprecated
+	public Messages(JavaPlugin plugin, File dataFolder, InputStream resource, String fileName) {
+		this(plugin, fileName, dataFolder.toPath(), resource);
 	}
 	
 }
